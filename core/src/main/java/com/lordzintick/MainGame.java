@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -14,6 +15,7 @@ import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
 import com.lordzintick.control.Input;
 import com.lordzintick.core.Logger;
+import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.game.screen.MainGameScreen;
 import com.lordzintick.game.spell.Spells;
 import com.lordzintick.ui.screen.StartGameScreen;
@@ -65,6 +67,8 @@ public class MainGame extends ApplicationAdapter {
      */
     public Json json;
     public Spells spells;
+    public TextureRegion[][] effectAtlas;
+    public TextureRegion[][] particlesAtlas;
 
     /**
      * The current {@link BaseScreen} of the game
@@ -78,6 +82,9 @@ public class MainGame extends ApplicationAdapter {
     @Override
     public void create() {
         // Initialize instances
+        effectAtlas = TextureRegion.split(new Texture("textures/effects.png"), 8, 8);
+        particlesAtlas = TextureRegion.split(new Texture("textures/particles.png"), 2, 2);
+
         random = new Random(System.currentTimeMillis());
         gameBatch = new SpriteBatch();
         uiBatch = new SpriteBatch();
@@ -85,7 +92,7 @@ public class MainGame extends ApplicationAdapter {
         camera = new OrthographicCamera(2, 2);
         camera.setToOrtho(false, 2, 2);
         json = new Json();
-        spells = new Spells();
+        spells = new Spells(this);
         input = new Input(this);
         Gdx.input.setInputProcessor(input);
 
@@ -114,8 +121,10 @@ public class MainGame extends ApplicationAdapter {
     public void render() {
         // Clear the screen to the background color and update screen objects + the camera
         ScreenUtils.clear(screen.getBackgroundColor());
-        spells.tickAll(Gdx.graphics.getDeltaTime());
-        screen.update(Gdx.graphics.getDeltaTime());
+        if (!screen.isPaused()) {
+            spells.tickAll(Gdx.graphics.getDeltaTime());
+            screen.update(Gdx.graphics.getDeltaTime());
+        }
         camera.update();
 
         // Update the gameBatch transform matrix
@@ -128,6 +137,7 @@ public class MainGame extends ApplicationAdapter {
 
         uiBatch.begin();
         screen.renderUI(Gdx.graphics.getDeltaTime());
+        font.draw(uiBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 40, Gdx.graphics.getHeight() - font.getLineHeight() * 2);
         uiBatch.end();
     }
 
@@ -156,6 +166,9 @@ public class MainGame extends ApplicationAdapter {
         font.dispose();
         megaFont.dispose();
         screen.dispose();
+
+        effectAtlas[0][0].getTexture().dispose();
+        particlesAtlas[0][0].getTexture().dispose();
 
         // Iterate through all sounds and dispose of them
         for (Sound sound : AudioManager.SOUNDS.values()) {

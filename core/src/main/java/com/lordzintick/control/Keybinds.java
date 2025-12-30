@@ -22,10 +22,6 @@ public final class Keybinds {
     public static final Keybind LEFT = register("left", new Keybind(Input.Keys.A, Keybind.Context.GAME, () -> {LOGGER.log("LEFT pressed");}));
     public static final Keybind RIGHT = register("right", new Keybind(Input.Keys.D, Keybind.Context.GAME, () -> {LOGGER.log("RIGHT pressed");}));
 
-    public static final Keybind SPELL_ONE = register("spell_one", new Keybind(Input.Keys.E, Keybind.Context.GAME, () -> {}));
-    public static final Keybind SPELL_TWO = register("spell_two", new Keybind(Input.Keys.R, Keybind.Context.GAME, () -> {}));
-    public static final Keybind SPELL_THREE = register("spell_three", new Keybind(Input.Keys.F, Keybind.Context.GAME, () -> {}));
-
     /**
      * Registers a new {@link Keybind} into the {@link Keybinds#KEYBINDS} map for use in the {@link Input} class, and throws an error if the ID already exists
      * @param id The ID to register the keybind under. Unused for now other than preventing two keybinds with the same ID from existing at once

@@ -17,6 +17,7 @@ public abstract class BaseScreen {
     protected final Logger LOGGER = new Logger(this.getClass());
     public final MainGame game;
     public final ArrayList<Widget> widgets = new ArrayList<>();
+    protected boolean paused = false;
 
     /**
      * Constructs a new {@link BaseScreen} with the provided {@link MainGame} and adds the initial widgets to it
@@ -59,15 +60,6 @@ public abstract class BaseScreen {
      */
     protected abstract void addWidgets();
 
-    /**
-     * Controls whether this screen should render the current tilemap.<br>
-     * Returns {@code false} by default.
-     * @return Whether this screen should enable the {@link com.lordzintick.game.tile.TilemapHandler} and render the current tilemap
-     */
-    public boolean shouldRenderTilemap() {
-        return false;
-    }
-
     public void startMusic() {
         if (getBackgroundMusic() != null && getBackgroundMusic().stream) {
             getBackgroundMusic().play();
@@ -79,6 +71,18 @@ public abstract class BaseScreen {
             getBackgroundMusic().pause();
         }
     }
+
+    public void pause() {
+        paused = true;
+        pauseMusic();
+    }
+
+    public void resume() {
+        paused = false;
+        startMusic();
+    }
+
+    public boolean isPaused() {return paused;}
 
     public void update(float deltaTime) {}
     public void renderGame(float deltaTime) {}

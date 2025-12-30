@@ -1,0 +1,107 @@
+package com.lordzintick.game.entity;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.lordzintick.audio.AudioManager;
+import com.lordzintick.audio.Sound;
+import com.lordzintick.game.AbstractGameObject;
+import com.lordzintick.game.proj.Projectile;
+import com.lordzintick.game.proj.StationaryProjectile;
+import com.lordzintick.game.screen.AbstractGameScreen;
+import com.lordzintick.util.Direction;
+
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
+
+public abstract class HostileEntity extends Entity {
+    protected Vector2 moveVector = Vector2.Zero;
+    public final Player player;
+    private final ArrayList<Texture> usedTextures = new ArrayList<>();
+
+    /**
+     * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
+     *
+     * @param screen  The {@link AbstractGameScreen} containing this entity
+     * @param texture The spritesheet for this entity to use
+     * @param width   The width of the entity's image
+     * @param height  The height of the entity's image
+     */
+    public HostileEntity(AbstractGameScreen screen, Texture texture, int width, int height, Player player) {
+        super(screen, texture, width, height);
+        this.player = player;
+        this.speed = getMoveSpeed();
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        moveVector = new Vector2(player.x, player.y).sub(x, y).nor();
+        x += moveVector.x * deltaTime * speed;
+        y += moveVector.y * deltaTime * speed;
+
+        moving = moveVector.len() > 0;
+
+        if (moveVector.y > 0) {
+            direction = Direction.UP;
+        } else if (moveVector.y < 0) {
+            direction = Direction.DOWN;
+        }
+
+        if (moveVector.x > 0) {
+            direction = Direction.RIGHT;
+        } else if (moveVector.x < 0) {
+            direction = Direction.LEFT;
+        }
+    }
+
+    @Override
+    public void onDeath() {
+        super.onDeath();
+        player.xp += getXP();
+        player.score += getScore();
+        while (player.xp >= player.getRequiredXP()) {
+            player.xp -= player.getRequiredXP();
+            player.levelUp();
+        }
+
+        Sound sound = getDeathSound();
+        if (sound != null && !sound.stream) {
+            sound.play();
+        }
+    }
+
+    @Override
+    public void collide(AbstractGameObject other) {
+        if (other instanceof Player && ((Player) other).iframes <= 0) {
+            this.shouldRemove = true;
+            ((Player) other).iframes = 3f;
+            ((Player) other).health--;
+
+            AudioManager.PLAYER_HIT.play();
+        }
+    }
+
+    protected abstract float getMoveSpeed();
+    public abstract Sound getHurtSound();
+    public Sound getDeathSound() {
+        return getHurtSound();
+    }
+    public abstract int getScore();
+    public abstract int getXP();
+
+    protected Texture createTexture(String filename) {
+        Texture tex = new Texture(filename);
+        usedTextures.add(tex);
+        return tex;
+    }
+
+    @Override
+    public void dispose() {
+        for (Texture texture : usedTextures) {
+            texture.dispose();
+        }
+    }
+}

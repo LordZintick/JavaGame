@@ -13,6 +13,7 @@ public abstract class Widget extends PositionedRenderable {
     public int width, height = 0;
     protected boolean hovering = false;
     protected double ticks = 0;
+    public boolean visible = true;
 
     /**
      * Constructs a simple {@link Widget} with no defined width or height

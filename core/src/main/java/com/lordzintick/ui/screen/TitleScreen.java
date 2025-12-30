@@ -38,7 +38,7 @@ public class TitleScreen extends AbstractUIScreen {
         widgets.add(new TextLabel(this, new Text("JavaGame").setAlign(UIUtil.CENTER).mega(), getMidX(), (int) (getMidY() * 1.5)));
         // Add start button
         widgets.add(new TextButton(this, new Text("Start").setAlign(UIUtil.CENTER), getMidX(), getMidY(), 128, 64, () -> {
-            game.changeScreen(game.screenHolder.START_GAME);
+            game.changeScreen(game.screenHolder.MAIN_GAME); // Change to START_GAME screen later once implemented
         }));
         // Add quit button
         widgets.add(new TextButton(this, new Text("Quit").setAlign(UIUtil.CENTER), getMidX(), getMidY() - 74, 128, 64, () -> {

@@ -1,7 +1,9 @@
 package com.lordzintick.control;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Vector2;
 import com.lordzintick.MainGame;
+import com.lordzintick.core.Logger;
 import com.lordzintick.ui.widget.Widget;
 import com.lordzintick.util.MathUtil;
 
@@ -9,7 +11,10 @@ import com.lordzintick.util.MathUtil;
  * A wrapper class around {@link InputProcessor} for game-specific input handling
  */
 public final class Input implements InputProcessor {
+    private static final Logger LOGGER = new Logger(Input.class);
+
     private final MainGame game;
+    public boolean[] mouseButtonsPressed = new boolean[] {false, false, false, false, false};
 
     public Input(MainGame game) {
         this.game = game;
@@ -48,10 +53,15 @@ public final class Input implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        mouseButtonsPressed[button] = true;
+        LOGGER.log("Mouse button " + button + " pressed!");
+
         // Iterate through all the screen's widgets
         for (Widget widget : game.screen.widgets) {
+            LOGGER.log("Widget loop");
             // Check if the mouse position is in the widgets' area, and call the according method
             if (MathUtil.isPointInArea(screenX, screenY, widget.x, widget.y, widget.width, widget.height)) {
+                LOGGER.log("Mouse is in area. Clicking!");
                 widget.click(button);
             }
         }
@@ -60,6 +70,9 @@ public final class Input implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        mouseButtonsPressed[button] = false;
+        LOGGER.log("Mouse button " + button + " released!");
+
         // Iterate through all the screen's widgets
         for (Widget widget : game.screen.widgets) {
             // Check if the mouse position is in the widgets' area, and call the according method

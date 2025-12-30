@@ -59,6 +59,7 @@ public class TextButton extends Widget {
     @Override
     public void render(Batch batch, float deltaTime) {
         super.render(batch, deltaTime);
+        if (!visible) return;
         // Draw the debug texture
         batch.draw(debugTexture, x, y, width, height);
 

@@ -3,6 +3,7 @@ package com.lordzintick.util;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.lordzintick.MainGame;
 
 import java.util.UUID;
@@ -53,5 +54,11 @@ public final class UIUtil {
     public static String generateRandomString(int length) {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         return uuid.substring(0, Math.min(length, uuid.length()));
+    }
+
+    public static float getFontStringWidth(String string, BitmapFont font) {
+        GlyphLayout layout = new GlyphLayout();
+        layout.setText(font, string);
+        return layout.width;
     }
 }
