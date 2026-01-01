@@ -20,7 +20,7 @@ public class BouncingImageLabel extends ImageLabel {
      * The current moving direction of the {@link BouncingImageLabel}.
      * Should only be diagonal.
      */
-    private Direction direction = Direction.UP_LEFT;
+    private Direction direction;
 
     /**
      * Constructs a new {@link BouncingImageLabel} with the provided initial parameters

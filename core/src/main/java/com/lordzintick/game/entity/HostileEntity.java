@@ -1,25 +1,21 @@
 package com.lordzintick.game.entity;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
 import com.lordzintick.game.AbstractGameObject;
-import com.lordzintick.game.proj.Projectile;
-import com.lordzintick.game.proj.StationaryProjectile;
+import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.util.Direction;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
 public abstract class HostileEntity extends Entity {
     protected Vector2 moveVector = Vector2.Zero;
     public final Player player;
     private final ArrayList<Texture> usedTextures = new ArrayList<>();
+    public float damage = 1;
 
     /**
      * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
@@ -60,7 +56,7 @@ public abstract class HostileEntity extends Entity {
     @Override
     public void onDeath() {
         super.onDeath();
-        player.xp += getXP();
+        player.xp += getXP() * player.xpMultiplier;
         player.score += getScore();
         while (player.xp >= player.getRequiredXP()) {
             player.xp -= player.getRequiredXP();
@@ -78,9 +74,7 @@ public abstract class HostileEntity extends Entity {
         if (other instanceof Player && ((Player) other).iframes <= 0) {
             this.shouldRemove = true;
             ((Player) other).iframes = 3f;
-            ((Player) other).health--;
-
-            AudioManager.PLAYER_HIT.play();
+            ((Player) other).tryDamage(damage);
         }
     }
 

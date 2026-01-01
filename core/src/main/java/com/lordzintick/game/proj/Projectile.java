@@ -11,7 +11,7 @@ import com.lordzintick.core.Logger;
 import com.lordzintick.game.AbstractGameObject;
 import com.lordzintick.game.entity.Entity;
 import com.lordzintick.game.entity.HostileEntity;
-import com.lordzintick.game.entity.Player;
+import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 
 import java.util.function.BiConsumer;
@@ -21,15 +21,15 @@ public class Projectile extends AbstractGameObject {
 
     public Vector2 movementVector;
     public final Texture sheet;
-    public final int damage;
+    public final float damage;
     public final float frameTime;
     protected float animTicks = 0;
-    private int frame = 0;
-    private final TextureRegion[][] splitFrames;
+    protected int frame = 0;
+    protected final TextureRegion[][] splitFrames;
     private int pierce;
     private final BiConsumer<Projectile, Float> tick;
     private final BiConsumer<Projectile, Entity> hit;
-    private final Entity owner;
+    protected final Entity owner;
     private final boolean friendly;
 
     /**
@@ -37,7 +37,7 @@ public class Projectile extends AbstractGameObject {
      *
      * @param screen The {@link AbstractGameScreen} that is the parent/holder of this projectile
      */
-    public Projectile(AbstractGameScreen screen, Entity owner, float moveX, float moveY, int width, int height, Texture sheet, int damage, float frameTime, float speed, int pierce, BiConsumer<Projectile, Float> tick, BiConsumer<Projectile, Entity> hit, boolean friendly) {
+    public Projectile(AbstractGameScreen screen, Entity owner, float moveX, float moveY, int width, int height, Texture sheet, float damage, float frameTime, float speed, int pierce, BiConsumer<Projectile, Float> tick, BiConsumer<Projectile, Entity> hit, boolean friendly) {
         super(screen);
         this.damage = damage;
         this.pierce = pierce;
@@ -65,7 +65,7 @@ public class Projectile extends AbstractGameObject {
             }
         }
 
-        batch.draw(splitFrames[frame][0], x, y, 0, 0, width * 8, height * 8, 1, 1, 0);
+        batch.draw(splitFrames[frame][0], x, y, width * 8, height * 8);
     }
 
     @Override
@@ -91,16 +91,14 @@ public class Projectile extends AbstractGameObject {
             entity.iframes = 0.25f;
 
             if (entity instanceof  Player) {
-                entity.health--;
+                ((Player) entity).tryDamage(damage);
             } else {
                 entity.health -= damage;
             }
 
-            Sound sound;
+            Sound sound = null;
             if (entity instanceof HostileEntity) {
                 sound = ((HostileEntity) entity).getHurtSound();
-            } else {
-                sound = AudioManager.PLAYER_HIT;
             }
 
             if (sound != null && !sound.stream) {

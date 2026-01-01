@@ -1,6 +1,7 @@
 package com.lordzintick.util;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.Align;
 
 /**
  * A utility class describing a formatted string of text
@@ -9,7 +10,7 @@ public class Text {
     public final String text;
     public Color color = Color.WHITE;
     public boolean glitchy = false;
-    public int align = UIUtil.LEFT;
+    public int align = Align.left;
     public boolean mega = false;
 
     @Override

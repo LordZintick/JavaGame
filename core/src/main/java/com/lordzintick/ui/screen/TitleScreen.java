@@ -3,6 +3,7 @@ package com.lordzintick.ui.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.utils.Align;
 import com.lordzintick.MainGame;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
@@ -35,13 +36,13 @@ public class TitleScreen extends AbstractUIScreen {
         }
 
         // Add title
-        widgets.add(new TextLabel(this, new Text("JavaGame").setAlign(UIUtil.CENTER).mega(), getMidX(), (int) (getMidY() * 1.5)));
+        widgets.add(new TextLabel(this, new Text("JavaGame").setAlign(Align.center).mega(), getMidX(), (int) (getMidY() * 1.5)));
         // Add start button
-        widgets.add(new TextButton(this, new Text("Start").setAlign(UIUtil.CENTER), getMidX(), getMidY(), 128, 64, () -> {
-            game.changeScreen(game.screenHolder.MAIN_GAME); // Change to START_GAME screen later once implemented
+        widgets.add(new TextButton(this, new Text("Start").setAlign(Align.center), getMidX(), getMidY(), 128, 64, () -> {
+            game.changeScreen(game.screenHolder.SELECT_CLASS);
         }));
         // Add quit button
-        widgets.add(new TextButton(this, new Text("Quit").setAlign(UIUtil.CENTER), getMidX(), getMidY() - 74, 128, 64, () -> {
+        widgets.add(new TextButton(this, new Text("Quit").setAlign(Align.center), getMidX(), getMidY() - 74, 128, 64, () -> {
             LOGGER.log("Stopping!");
             Gdx.app.exit();
         }));

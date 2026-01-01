@@ -1,18 +1,21 @@
 package com.lordzintick.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector4;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
-import com.lordzintick.game.proj.ProjectileHelper;
+import com.lordzintick.game.entity.player.Player;
+import com.lordzintick.game.proj.Projectile;
+import com.lordzintick.game.skill.SkillConfig;
+import com.lordzintick.game.skill.SkillHelper;
 import com.lordzintick.game.screen.AbstractGameScreen;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class EvilWizard extends HostileEntity {
     private float cooldown = 3f;
     private final Texture projTexture;
+    private final ArrayList<Projectile> ownedProjectiles = new ArrayList<>();
     /**
      * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
      *
@@ -20,9 +23,17 @@ public class EvilWizard extends HostileEntity {
      * @param player
      */
     public EvilWizard(AbstractGameScreen screen, Player player) {
-        super(screen, new Texture("textures/evil_wizard.png"), 6, 16, player);
+        super(screen, new Texture("textures/game/mobs/evil_wizard.png"), 6, 12, player);
         this.scale = 8f;
-        this.projTexture = createTexture("textures/plasma_bolt.png");
+        this.projTexture = createTexture("textures/game/skills/plasma_bolt.png");
+    }
+
+    @Override
+    public void onDeath() {
+        super.onDeath();
+        for (Projectile projectile : ownedProjectiles) {
+            projectile.shouldRemove = true;
+        }
     }
 
     @Override
@@ -32,7 +43,7 @@ public class EvilWizard extends HostileEntity {
 
         if (cooldown <= 0) {
             cooldown = 3f;
-            ProjectileHelper.shootProjectile(projTexture, this, ProjectileHelper.ProjConfig.PLASMA_BOLT);
+            ownedProjectiles.add(SkillHelper.shootProjectile(projTexture, this, Optional.empty(), SkillConfig.PLASMA_BOLT));
         }
     }
 
@@ -44,6 +55,11 @@ public class EvilWizard extends HostileEntity {
     @Override
     public Sound getHurtSound() {
         return AudioManager.HIT;
+    }
+
+    @Override
+    public Sound getDeathSound() {
+        return AudioManager.KILL;
     }
 
     @Override

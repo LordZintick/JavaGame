@@ -3,7 +3,7 @@ package com.lordzintick.game.entity;
 import com.badlogic.gdx.graphics.Texture;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
-import com.lordzintick.game.AbstractGameObject;
+import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 
 public class Zombie extends HostileEntity {
@@ -13,7 +13,7 @@ public class Zombie extends HostileEntity {
      * @param screen  The {@link AbstractGameScreen} containing this entity
      */
     public Zombie(AbstractGameScreen screen, Player player) {
-        super(screen, new Texture("textures/zombie.png"), 4, 16, player);
+        super(screen, new Texture("textures/game/mobs/zombie.png"), 4, 8, player);
         scale = 8f;
     }
 
@@ -40,6 +40,11 @@ public class Zombie extends HostileEntity {
     @Override
     public Sound getHurtSound() {
         return AudioManager.HIT;
+    }
+
+    @Override
+    public Sound getDeathSound() {
+        return AudioManager.KILL;
     }
 
     @Override

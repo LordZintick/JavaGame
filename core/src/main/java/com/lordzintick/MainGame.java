@@ -2,6 +2,8 @@ package com.lordzintick;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,13 +17,15 @@ import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
 import com.lordzintick.control.Input;
 import com.lordzintick.core.Logger;
-import com.lordzintick.game.screen.AbstractGameScreen;
+import com.lordzintick.game.accessory.AccessoryTypes;
+import com.lordzintick.game.entity.player.PlayerClass;
 import com.lordzintick.game.screen.MainGameScreen;
-import com.lordzintick.game.spell.Spells;
-import com.lordzintick.ui.screen.StartGameScreen;
+import com.lordzintick.game.skill.SkillTypes;
+import com.lordzintick.ui.screen.SelectClassScreen;
 import com.lordzintick.ui.screen.TitleScreen;
 import com.lordzintick.util.BaseScreen;
 
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -66,9 +70,17 @@ public class MainGame extends ApplicationAdapter {
      * The {@link Json} instance used for JSON parsing and writing
      */
     public Json json;
-    public Spells spells;
+    public SkillTypes skillTypes;
+    public AccessoryTypes accessoryTypes;
     public TextureRegion[][] effectAtlas;
     public TextureRegion[][] particlesAtlas;
+    public Texture debugTexture;
+    public Texture slotTexture;
+    public Texture cooldownTexture;
+    public PlayerClass selectedPlayerClass = PlayerClass.MAGE;
+    public AssetManager assets; // TODO: Implement asynchronous asset loading and better texture disposal
+    public FileHandle highscoreFile;
+    public int highscore = 0;
 
     /**
      * The current {@link BaseScreen} of the game
@@ -82,8 +94,21 @@ public class MainGame extends ApplicationAdapter {
     @Override
     public void create() {
         // Initialize instances
-        effectAtlas = TextureRegion.split(new Texture("textures/effects.png"), 8, 8);
-        particlesAtlas = TextureRegion.split(new Texture("textures/particles.png"), 2, 2);
+        effectAtlas = TextureRegion.split(new Texture("textures/ui/effects.png"), 8, 8);
+        particlesAtlas = TextureRegion.split(new Texture("textures/game/particles.png"), 2, 2);
+        debugTexture = new Texture("textures/debug.png");
+        slotTexture = new Texture("textures/ui/slot.png");
+        cooldownTexture = new Texture("textures/ui/cooldown.png");
+        highscoreFile = Gdx.files.local("highscore.txt");
+        if (!highscoreFile.exists()) {
+            highscoreFile.parent().mkdirs();
+            try {
+                highscoreFile.file().createNewFile();
+            } catch (IOException e) {
+                LOGGER.log("IOException: " + e.getMessage());
+            }
+            highscoreFile.writeString("0", false);
+        }
 
         random = new Random(System.currentTimeMillis());
         gameBatch = new SpriteBatch();
@@ -92,7 +117,8 @@ public class MainGame extends ApplicationAdapter {
         camera = new OrthographicCamera(2, 2);
         camera.setToOrtho(false, 2, 2);
         json = new Json();
-        spells = new Spells(this);
+        skillTypes = new SkillTypes(this);
+        accessoryTypes = new AccessoryTypes(this);
         input = new Input(this);
         Gdx.input.setInputProcessor(input);
 
@@ -115,6 +141,9 @@ public class MainGame extends ApplicationAdapter {
         // Set the initial screen
         screen = screenHolder.TITLE;
         screen.startMusic();
+
+        String highscoreData = highscoreFile.readString().replace("\"", "").trim();
+        highscore = Integer.parseInt(highscoreData);
     }
 
     @Override
@@ -122,7 +151,6 @@ public class MainGame extends ApplicationAdapter {
         // Clear the screen to the background color and update screen objects + the camera
         ScreenUtils.clear(screen.getBackgroundColor());
         if (!screen.isPaused()) {
-            spells.tickAll(Gdx.graphics.getDeltaTime());
             screen.update(Gdx.graphics.getDeltaTime());
         }
         camera.update();
@@ -138,6 +166,9 @@ public class MainGame extends ApplicationAdapter {
         uiBatch.begin();
         screen.renderUI(Gdx.graphics.getDeltaTime());
         font.draw(uiBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 40, Gdx.graphics.getHeight() - font.getLineHeight() * 2);
+        font.setColor(Color.GOLD);
+        font.draw(uiBatch, "Highscore: " + highscore, 40, Gdx.graphics.getHeight() - font.getLineHeight() * 5);
+        font.setColor(Color.WHITE);
         uiBatch.end();
     }
 
@@ -169,11 +200,14 @@ public class MainGame extends ApplicationAdapter {
 
         effectAtlas[0][0].getTexture().dispose();
         particlesAtlas[0][0].getTexture().dispose();
+        debugTexture.dispose();
 
         // Iterate through all sounds and dispose of them
         for (Sound sound : AudioManager.SOUNDS.values()) {
             sound.dispose();
         }
+
+        highscoreFile.writeString(String.valueOf(highscore), false);
     }
 
     /**
@@ -181,12 +215,12 @@ public class MainGame extends ApplicationAdapter {
      */
     public final class ScreenHolder {
         public final TitleScreen TITLE;
-        public final StartGameScreen START_GAME;
+        public final SelectClassScreen SELECT_CLASS;
         public final MainGameScreen MAIN_GAME;
 
         private ScreenHolder() {
             TITLE = new TitleScreen(MainGame.this);
-            START_GAME = new StartGameScreen(MainGame.this);
+            SELECT_CLASS = new SelectClassScreen(MainGame.this);
             MAIN_GAME = new MainGameScreen(MainGame.this);
         }
     }

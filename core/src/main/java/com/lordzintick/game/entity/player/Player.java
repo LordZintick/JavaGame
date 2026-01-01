@@ -1,0 +1,233 @@
+package com.lordzintick.game.entity.player;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector4;
+import com.lordzintick.audio.AudioManager;
+import com.lordzintick.control.Keybinds;
+import com.lordzintick.game.accessory.Accessory;
+import com.lordzintick.game.entity.Entity;
+import com.lordzintick.game.entity.effect.Effect;
+import com.lordzintick.game.screen.AbstractGameScreen;
+import com.lordzintick.game.skill.Skill;
+import com.lordzintick.game.skill.SkillType;
+import com.lordzintick.game.skill.SkillTypes;
+import com.lordzintick.util.Direction;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+
+public class Player extends Entity {
+    public int maxMana = 100;
+    public int mana = maxMana;
+    public Skill[] equippedSkills;
+    private float manaTicks = 0;
+    public int score = 0;
+    public float xp = 0;
+    public int level = 1;
+    private float levelupTicks = 0;
+    private final TextureRegion[] levelupParticles;
+    public Skill equippingSkill = null;
+    public int skillPoints = 0;
+    public PlayerClass playerClass;
+    private boolean updatedClass = false;
+    public int maxHealth = 20;
+    public final ArrayList<Accessory> accessories = new ArrayList<>();
+    private final HashMap<SkillType, Float> skillCooldownMultipliers = new HashMap<>();
+    private final HashMap<SkillType, Float> skillDamageMultipliers = new HashMap<>();
+    public float globalCooldownMultiplier = 1;
+    public float globalDamageMultiplier = 1;
+    public float blockPower = 0;
+    public float manaRegenMultiplier = 1;
+    public float xpMultiplier = 1;
+
+    /**
+     * @param screen The {@link AbstractGameScreen} containing this player
+     */
+    public Player(AbstractGameScreen screen, PlayerClass playerClass) {
+        super(screen, new Texture(Gdx.files.internal("textures/game/player/player_" + playerClass.name().toLowerCase(Locale.ROOT) + ".png")), 6, 12);
+        this.playerClass = playerClass;
+        levelupParticles = new TextureRegion[] {screen.game.particlesAtlas[1][0], screen.game.particlesAtlas[1][1]};
+        this.speed = 256;
+        x = (float) Gdx.graphics.getWidth() / 2;
+        y = (float) Gdx.graphics.getWidth() / 2;
+        scale = 8f;
+        equippedSkills = new Skill[] {screen.game.skillTypes.SKILL_TYPES.get(playerClass.startSkill).getInstance(), null, null};
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        if (playerClass != screen.game.selectedPlayerClass || !updatedClass) {
+            textures[0][0].getTexture().dispose();
+            playerClass = screen.game.selectedPlayerClass;
+            textures = TextureRegion.split(new Texture(Gdx.files.internal("textures/game/player/player_" + playerClass.name().toLowerCase(Locale.ROOT) + ".png")), 6, 12);
+            if (!updatedClass) {
+                updatedClass = true;
+                playerClass.statModifier.accept(this);
+                health = maxHealth;
+                mana = maxMana;
+                equippedSkills = new Skill[] {screen.game.skillTypes.SKILL_TYPES.get(playerClass.startSkill).getInstance(), null, null};
+            }
+        }
+
+        super.update(deltaTime);
+
+        manaTicks += deltaTime;
+        if (manaTicks >= 0.1f * manaRegenMultiplier && mana < maxMana) {
+            manaTicks = 0;
+            mana++;
+        }
+
+        if (levelupTicks > 0) {
+            levelupTicks -= deltaTime;
+            screen.addParticle(
+                levelupParticles,
+                x + (float) width / 2, y + (float) height / 2,
+                new Vector4(screen.game.random.nextFloat(-100, 100), screen.game.random.nextFloat(-100, 100), 0, 0),
+                5f, 0.1f, 3f
+            );
+        }
+
+        if (screen.game.input.mouseButtonsPressed[0] && equippedSkills[0] != null && ticks >= 1f) {
+            equippedSkills[0].cast(this);
+        }
+
+        if (screen.game.input.mouseButtonsPressed[2] && equippedSkills[1] != null && ticks >= 1f) {
+            equippedSkills[1].cast(this);
+        }
+
+        if (screen.game.input.mouseButtonsPressed[1] && equippedSkills[2] != null && ticks >= 1f) {
+            equippedSkills[2].cast(this);
+        }
+
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+
+        if (Keybinds.UP.isPressed) {
+            moving = true;
+            direction = Direction.UP;
+            if (y + height <= w - w / 16)
+                y += speed * deltaTime;
+        }
+
+        if (Keybinds.DOWN.isPressed) {
+            moving = true;
+            direction = Direction.DOWN;
+            if (y >= w / 32)
+                y -= speed * deltaTime;
+        }
+
+        if (Keybinds.LEFT.isPressed) {
+            moving = true;
+            direction = Direction.LEFT;
+            if (x >= w / 32)
+                x -= speed * deltaTime;
+        }
+
+        if (Keybinds.RIGHT.isPressed) {
+            moving = true;
+            direction = Direction.RIGHT;
+            if (x + width <= w - w / 10)
+                x += speed * deltaTime;
+        }
+
+        if (!Keybinds.UP.isPressed && !Keybinds.DOWN.isPressed && !Keybinds.LEFT.isPressed && !Keybinds.RIGHT.isPressed) {
+            moving = false;
+        }
+
+        OrthographicCamera cam = screen.game.camera;
+        cam.position.set(x - Gdx.graphics.getWidth() / cam.viewportWidth + (float) width / 2 * scale, y - Gdx.graphics.getHeight() / cam.viewportHeight + (float) height / 2 * scale, 0);
+    }
+
+    @Override
+    public void render(Batch batch, float deltaTime) {
+        super.render(batch, deltaTime);
+        for (int i = 0; i < effects.size(); i++) {
+            Effect effect = effects.get(i);
+            batch.draw(effect.sprite, x + (float) width / 2 - 4, y + height + 10 + i * 10, 8, 8);
+        }
+    }
+
+    @Override
+    public void onDeath() {
+        LOGGER.log("Oh noes! You died!");
+        Gdx.app.exit();
+    }
+
+    @Override
+    protected int getFrameCount() {
+        return 2;
+    }
+
+    @Override
+    protected float getFrameTime() {
+        return 0.1f;
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public int getRequiredXP() {
+        return level * 10;
+    }
+
+    public void tryDamage(float amount) {
+        float val = screen.game.random.nextFloat();
+        if (val <= blockPower && blockPower > 0) {
+            AudioManager.BLOCK.play();
+        } else {
+            health -= amount;
+            AudioManager.PLAYER_HIT.play();
+        }
+    }
+
+    public void addSkillCooldownMultiplier(String id, float amount) {
+        SkillType type = screen.game.skillTypes.SKILL_TYPES.get(id);
+        if (!skillCooldownMultipliers.containsKey(type)) {
+            skillCooldownMultipliers.put(type, amount);
+        } else {
+            skillCooldownMultipliers.put(type, skillCooldownMultipliers.get(type) - amount);
+        }
+    }
+
+    public void addSkillDamageMultiplier(String id, float amount) {
+        SkillType type = screen.game.skillTypes.SKILL_TYPES.get(id);
+        if (!skillDamageMultipliers.containsKey(type)) {
+            skillDamageMultipliers.put(type, amount);
+        } else {
+            skillDamageMultipliers.put(type, skillDamageMultipliers.get(type) + amount);
+        }
+    }
+
+    public float getSkillCooldownMultiplier(SkillType type) {
+        if (!skillCooldownMultipliers.containsKey(type)) {
+            skillCooldownMultipliers.put(type, 1f);
+            return 1f;
+        } else {
+            return Math.max(0.1f, skillCooldownMultipliers.get(type) * globalCooldownMultiplier);
+        }
+    }
+
+    public float getSkillDamageMultiplier(SkillType type) {
+        if (!skillDamageMultipliers.containsKey(type)) {
+            skillDamageMultipliers.put(type, 1f);
+            return 1f;
+        } else {
+            return Math.min(10f, skillDamageMultipliers.get(type) * globalDamageMultiplier);
+        }
+    }
+
+    public void levelUp() {
+        level++;
+        AudioManager.LEVELUP.play();
+        levelupTicks += 2;
+        screen.pause();
+        skillPoints++;
+    }
+}

@@ -3,18 +3,27 @@ package com.lordzintick.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Align;
 import com.lordzintick.MainGame;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
+import com.lordzintick.game.Rarity;
+import com.lordzintick.game.accessory.Accessory;
+import com.lordzintick.game.accessory.AccessoryType;
 import com.lordzintick.game.entity.HostileEntity;
-import com.lordzintick.game.entity.Player;
+import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.entity.EntityHelper;
-import com.lordzintick.ui.widget.SpellSlot;
+import com.lordzintick.game.HealingCrystal;
+import com.lordzintick.game.skill.SkillType;
+import com.lordzintick.ui.widget.AccessorySlot;
+import com.lordzintick.ui.widget.SkillSlot;
 import com.lordzintick.ui.widget.TextButton;
 import com.lordzintick.ui.widget.TextLabel;
+import com.lordzintick.util.ListUtil;
 import com.lordzintick.util.Text;
 import com.lordzintick.util.UIUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -27,12 +36,14 @@ public class MainGameScreen extends AbstractGameScreen {
     private TextLabel healthLabel;
     private TextLabel levelLabel;
     private TextLabel scoreLabel;
-    public SpellSlot[] spellSlots;
-    private final SpellSlot[] levelupSlots;
+    public SkillSlot[] skillSlots;
+    private final SkillSlot[] levelupSlots;
+    private final AccessorySlot[] accessorySlots;
     private TextButton skipLevelupButton;
     private float spawnCooldown = 2f;
+    private float objCooldown = 60f;
     private boolean shuffledSlots = false;
-    private int totalEnemyWeight = 0;
+    public float difficultyMultiplier = 1;
 
     /**
      * Constructs a new {@link MainGameScreen} with the provided {@link MainGame}
@@ -41,38 +52,45 @@ public class MainGameScreen extends AbstractGameScreen {
     public MainGameScreen(MainGame game) {
         super(game);
 
-        spellSlots = new SpellSlot[] {
-            new SpellSlot(this, player, getMidX() - 202, 10, 0),
-            new SpellSlot(this, player, getMidX() - 64, 10, 1),
-            new SpellSlot(this, player, getMidX() + 74, 10, 2)
+        skillSlots = new SkillSlot[] {
+            new SkillSlot(this, player, getMidX() - 202, 10, 0),
+            new SkillSlot(this, player, getMidX() - 64, 10, 1),
+            new SkillSlot(this, player, getMidX() + 74, 10, 2)
         };
-        Collections.addAll(widgets, spellSlots);
+        Collections.addAll(widgets, skillSlots);
 
-        levelupSlots = new SpellSlot[] {
-            new SpellSlot(this, player, getMidX() - 202, getMidY(), 3),
-            new SpellSlot(this, player, getMidX() - 64, getMidY(), 4),
-            new SpellSlot(this, player, getMidX() + 74, getMidY(), 5)
+        levelupSlots = new SkillSlot[] {
+            new SkillSlot(this, player, getMidX() - 202, getMidY(), 3),
+            new SkillSlot(this, player, getMidX() - 64, getMidY(), 4),
+            new SkillSlot(this, player, getMidX() + 74, getMidY(), 5)
         };
-        for (SpellSlot slot : levelupSlots) {
+        for (SkillSlot slot : levelupSlots) {
             slot.visible = false;
         }
 
         Collections.addAll(widgets, levelupSlots);
+
+        accessorySlots = new AccessorySlot[] {
+            new AccessorySlot(this, player, getMidX() - 202, getMidY() + 312),
+            new AccessorySlot(this, player, getMidX() - 64, getMidY() + 312),
+            new AccessorySlot(this, player, getMidX() + 74, getMidY() + 312)
+        };
+        Collections.addAll(widgets, accessorySlots);
     }
 
     public Player getPlayer() {return player;}
 
     @Override
     protected void populateInitialObjects() {
-        player = new Player(this);
+        player = new Player(this, game.selectedPlayerClass);
         queueAddObject(player);
 
-        map = new Texture("textures/map.png");
+        map = new Texture("textures/game/map.png");
     }
 
     @Override
     protected void addWidgets() {
-        widgets.add(new TextButton(this, new Text("Exit").setAlign(UIUtil.CENTER), 74, 25, 128, 40, () -> {
+        widgets.add(new TextButton(this, new Text("Exit").setAlign(Align.center), 74, 25, 128, 40, () -> {
             game.camera.position.set(0,0,0);
             game.camera.update();
             game.changeScreen(game.screenHolder.TITLE);
@@ -90,8 +108,8 @@ public class MainGameScreen extends AbstractGameScreen {
         scoreLabel = new TextLabel(this, new Text("scoreo creme pie"), 140, (int) (Gdx.graphics.getHeight() - game.font.getLineHeight() * 4));
         widgets.add(scoreLabel);
 
-        skipLevelupButton = new TextButton(this, new Text("Skip"), getMidX() - 64, getMidY() - 20, 128, 40, () -> {
-            player.equippingSpell = null;
+        skipLevelupButton = new TextButton(this, new Text("Skip").setAlign(Align.center), getMidX(), getMidY() - 20, 128, 40, () -> {
+            player.equippingSkill = null;
             player.skillPoints--;
             if (player.skillPoints <= 0) {
                 resume();
@@ -104,17 +122,19 @@ public class MainGameScreen extends AbstractGameScreen {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        healthLabel.text = new Text("HP: " + player.health + "/" + player.getMaxHealth()).setColor(Color.RED);
+
+        healthLabel.text = new Text("HP: " + (int) player.health + "/" + player.getMaxHealth()).setColor(Color.RED);
         manaLabel.text = new Text("Mana: " + player.mana + "/" + player.maxMana).setColor(Color.BLUE);
         scoreLabel.text = new Text("Score: " + player.score);
-        levelLabel.text = new Text("Level " + player.level + " (" + player.xp + "/" + player.getRequiredXP() + ")").setColor(Color.GOLDENROD);
+        levelLabel.text = new Text("Level " + player.level + " (" + (int) player.xp + "/" + player.getRequiredXP() + ")").setColor(Color.GOLDENROD);
 
-        for (int i = 0; i < player.equippedSpells.length; i++) {
-            spellSlots[i].slottedSpell = player.equippedSpells[i];
+        for (int i = 0; i < player.equippedSkills.length; i++) {
+            skillSlots[i].slottedSkill = player.equippedSkills[i];
         }
 
         spawnCooldown -= deltaTime;
         if (spawnCooldown <= 0) {
+            difficultyMultiplier += 0.01f;
             spawnCooldown = game.random.nextFloat(0.75f, 1.5f);
             HostileEntity mob = EntityHelper.getWeightedRandomEntity(game.random).build(this, player);
             float w = Gdx.graphics.getWidth();
@@ -141,7 +161,18 @@ public class MainGameScreen extends AbstractGameScreen {
 
             mob.x = x;
             mob.y = y;
+            mob.health *= difficultyMultiplier;
+            mob.damage *= Math.max(1, difficultyMultiplier - 0.5f);
             queueAddObject(mob);
+        }
+
+        objCooldown -= deltaTime;
+        if (objCooldown <= 0) {
+            objCooldown = 30f;
+            HealingCrystal crystal = new HealingCrystal(this);
+            crystal.x = game.random.nextFloat(0, Gdx.graphics.getWidth());
+            crystal.y = game.random.nextFloat(0, Gdx.graphics.getWidth());
+            queueAddObject(crystal);
         }
     }
 
@@ -157,34 +188,72 @@ public class MainGameScreen extends AbstractGameScreen {
         player.skillPoints = Math.max(0, player.skillPoints);
 
         if (player.skillPoints > 0) {
-            if (!shuffledSlots) shuffleLevelupSlots();
+            if (!shuffledSlots) {
+                shuffleLevelupSlots();
+                shuffleAccessorySlots();
+            }
 
-            for (SpellSlot slot : levelupSlots) {
+            for (SkillSlot slot : levelupSlots) {
                 slot.render(game.uiBatch, deltaTime);
                 slot.visible = true;
             }
+
+            for (AccessorySlot slot : accessorySlots) {
+                slot.render(game.uiBatch, deltaTime);
+                slot.visible = true;
+            }
+
             skipLevelupButton.visible = true;
 
-            if (player.equippingSpell != null) {
-                game.uiBatch.setColor(player.equippingSpell.rarity.color);
-                game.uiBatch.draw(levelupSlots[0].slotTexture, Gdx.input.getX(), -Gdx.input.getY() + Gdx.graphics.getHeight(), 128, 128);
+            if (player.equippingSkill != null) {
+                game.uiBatch.setColor(player.equippingSkill.type.rarity.color);
+                game.uiBatch.draw(game.slotTexture, Gdx.input.getX(), -Gdx.input.getY() + Gdx.graphics.getHeight(), 128, 128);
                 game.uiBatch.setColor(Color.WHITE);
-                game.uiBatch.draw(player.equippingSpell.icon, Gdx.input.getX() + 32, -Gdx.input.getY() + Gdx.graphics.getHeight() + 32, 64, 64);
+                game.uiBatch.draw(player.equippingSkill.type.icon, Gdx.input.getX() + 32, -Gdx.input.getY() + Gdx.graphics.getHeight() + 32, 64, 64);
             }
         } else {
             shuffledSlots = false;
 
-            for (SpellSlot slot : levelupSlots) {
+            for (SkillSlot slot : levelupSlots) {
                 slot.visible = false;
             }
+
+            for (AccessorySlot slot : accessorySlots) {
+                slot.visible = false;
+            }
+
             skipLevelupButton.visible = false;
+        }
+
+        if (player.score > game.highscore) {
+            game.highscore = player.score;
         }
     }
 
     public void shuffleLevelupSlots() {
         shuffledSlots = true;
-        for (SpellSlot slot : levelupSlots) {
-            slot.slottedSpell = game.spells.getRandomSpell();
+        for (SkillSlot slot : levelupSlots) {
+            SkillType type = game.skillTypes.getWeightedRandomSkillType(player, levelupSlots);
+            if (type != null) {
+                slot.slottedSkill = type.getInstance();
+            } else {
+                slot.slottedSkill = null;
+            }
+        }
+    }
+
+    public void shuffleAccessorySlots() {
+        shuffledSlots = true;
+        for (AccessorySlot slot : accessorySlots) {
+            AccessoryType type = game.accessoryTypes.getWeightedRandomAccessoryType(accessorySlots);
+            if (type != null) {
+                slot.slottedAccessory = type.getInstance(
+                    Rarity.getWeightedRandomRarity(game.random),
+                    type.global ? ListUtil.listOf("ALL") : Accessory.getRandomTargets(player, game.random)
+                );
+            } else {
+                slot.slottedAccessory = null;
+            }
         }
     }
 

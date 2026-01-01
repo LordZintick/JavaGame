@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.lordzintick.audio.AudioManager;
 import com.lordzintick.core.Logger;
 import com.lordzintick.game.AbstractGameObject;
 import com.lordzintick.game.entity.effect.Effect;
+import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.util.Direction;
 
@@ -20,8 +22,8 @@ public abstract class Entity extends AbstractGameObject {
     protected final Logger LOGGER = new Logger(this.getClass());
 
     public float speed = 1;
-    protected final TextureRegion[][] textures;
-    private final ArrayList<Effect> effects = new ArrayList<>();
+    protected TextureRegion[][] textures;
+    protected final ArrayList<Effect> effects = new ArrayList<>();
     private final ArrayList<Effect> effectsForRemoval = new ArrayList<>();
     public Direction direction = Direction.DOWN;
     public boolean moving = false;
@@ -29,7 +31,7 @@ public abstract class Entity extends AbstractGameObject {
     protected double ticks = 0;
     private int frame = 0;
     public float scale = 1;
-    public int health = 1;
+    public float health = 999;
     public float iframes = 0;
     public Color colorModifier = Color.WHITE;
 
@@ -37,7 +39,7 @@ public abstract class Entity extends AbstractGameObject {
      * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
      * @param screen The {@link AbstractGameScreen} containing this entity
      * @param texture The spritesheet for this entity to use
-     * @param width The width of the entity's image
+     * @param width The width of the entity's damage
      * @param height The height of the entity's image
      */
     public Entity(AbstractGameScreen screen, Texture texture, int width, int height) {
@@ -63,6 +65,7 @@ public abstract class Entity extends AbstractGameObject {
     public abstract int getMaxHealth();
     public void onDeath() {
         shouldRemove = true;
+        textures[0][0].getTexture().dispose();
     }
 
     public void applyEffect(Effect effect) {
@@ -70,14 +73,25 @@ public abstract class Entity extends AbstractGameObject {
         effects.add(effect);
     }
 
+    public void damage(float amount) {
+        this.health -= amount;
+        if (this instanceof HostileEntity) {
+            if (((HostileEntity) this).getHurtSound() != null) {
+                ((HostileEntity) this).getHurtSound().play();
+            }
+        } else if (this instanceof Player) {
+            AudioManager.PLAYER_HIT.play();
+        }
+    }
+
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
+        this.collisionRect.set(x, y, width * scale, height * scale);
         ticks += deltaTime;
 
         if (iframes > 0) iframes -= deltaTime;
 
-        if (health <= 0) {
+        if (health <= 0 && ticks >= 1f) {
             onDeath();
         }
 

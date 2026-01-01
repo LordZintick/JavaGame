@@ -15,6 +15,13 @@ public final class AudioManager {
     public static final Sound LEVELUP = register("levelup", new Sound("audio/sfx/levelup_temp.mp3", false, 1, false));
     public static final Sound PLAYER_HIT = register("player_hit", new Sound("audio/sfx/player_hit.wav", false, 1, false));
     public static final Sound KABOOM = register("kaboom", new Sound("audio/sfx/kaboom.wav", false, 1, false));
+    public static final Sound SLASH = register("slash", new Sound("audio/sfx/slash.wav", false, 1, false));
+    public static final Sound KILL = register("kill", new Sound("audio/sfx/kill.wav", false, 1, false));
+    public static final Sound HEAL = register("heal", new Sound("audio/sfx/heal.wav", false, 1, false));
+    public static final Sound BLOCK = register("block", new Sound("audio/sfx/block.wav", false, 1, false));
+    public static final Sound MEGA_SLASH = register("mega_slash", new Sound("audio/sfx/mega_slash.wav", false, 1, false));
+    public static final Sound MEGA_HIT = register("mega_hit", new Sound("audio/sfx/mega_hit.wav", false, 1, false));
+    public static final Sound MEGA_KILL = register("mega_kill", new Sound("audio/sfx/mega_kill.wav", false, 1, false));
 
     /**
      * Registers a new {@link Sound} into the {@link AudioManager#SOUNDS} map, and throws an error if the ID already exists
