@@ -24,7 +24,7 @@ public class BleedEffect extends Effect {
         bleedTicks -= deltaTime;
         if (bleedTicks <= 0) {
             bleedTicks = entity instanceof Player ? 3f : 1f;
-            entity.damage(level * 2);
+            entity.damage(level * 2, true);
         }
 
         entity.screen.addParticle(

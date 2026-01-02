@@ -24,7 +24,7 @@ public class PoisonEffect extends Effect {
         poisonTicks -= deltaTime;
         if (poisonTicks <= 0) {
             poisonTicks = entity instanceof Player ? 3f : 1f;
-            entity.damage(level * 2);
+            entity.damage(level * 2, true);
         }
 
         entity.screen.addParticle(

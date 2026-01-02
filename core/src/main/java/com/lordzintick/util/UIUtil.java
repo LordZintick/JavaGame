@@ -37,6 +37,17 @@ public final class UIUtil {
         font.setColor(Color.WHITE);
     }
 
+    public static void renderOutlinedText(MainGame game, Batch batch, Text text, float x, float y, int width, boolean wrap) {
+        BitmapFont font = text.mega ? game.megaFont : game.outlinedFont;
+        font.setColor(text.color);
+        if (text.glitchy) {
+            font.draw(batch, generateRandomString(text.text.length()), x, y, width, text.align, wrap);
+        } else {
+            font.draw(batch, text.text, x, y, width, text.align, wrap);
+        }
+        font.setColor(Color.WHITE);
+    }
+
     /**
      * Used in the "glitchy" mode text; Generates a random string of A-Z, 0-9 characters of the provided length
      * @param length The length of the random string to generate

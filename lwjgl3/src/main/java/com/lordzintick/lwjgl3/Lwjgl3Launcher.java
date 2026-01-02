@@ -1,12 +1,8 @@
 package com.lordzintick.lwjgl3;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.lordzintick.MainGame;
-
-import java.awt.*;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
@@ -30,7 +26,7 @@ public class Lwjgl3Launcher {
         configuration.setMaximized(true);
         configuration.setResizable(false);
         configuration.setWindowIcon("icon.png");
-        configuration.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
+        configuration.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 0, 0);
 
         return configuration;
     }

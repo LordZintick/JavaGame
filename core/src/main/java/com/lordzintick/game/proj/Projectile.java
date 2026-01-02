@@ -104,22 +104,7 @@ public class Projectile extends AbstractGameObject {
 
             hit.accept(this, (Entity) other);
             Entity entity = ((Entity) other);
-            entity.iframes = 0.25f;
-
-            if (entity instanceof  Player) {
-                ((Player) entity).tryDamage(damage);
-            } else {
-                entity.health -= damage;
-            }
-
-            Sound sound = null;
-            if (entity instanceof HostileEntity) {
-                sound = ((HostileEntity) entity).getHurtSound();
-            }
-
-            if (sound != null && !sound.stream) {
-                sound.play();
-            }
+            entity.damage(damage);
 
             if (pierce > 0) {
                 pierce--;

@@ -22,6 +22,7 @@ public abstract class Entity extends AbstractGameObject {
     protected final Logger LOGGER = new Logger(this.getClass());
 
     public float speed = 1;
+    public float speedMultiplier = 1;
     protected TextureRegion[][] textures;
     protected final ArrayList<Effect> effects = new ArrayList<>();
     private final ArrayList<Effect> effectsForRemoval = new ArrayList<>();
@@ -30,7 +31,6 @@ public abstract class Entity extends AbstractGameObject {
     protected double animTicks = 0;
     protected double ticks = 0;
     private int frame = 0;
-    public float scale = 1;
     public float health = 999;
     public float iframes = 0;
     public Color colorModifier = Color.WHITE;
@@ -73,14 +73,12 @@ public abstract class Entity extends AbstractGameObject {
     }
 
     public void damage(float amount) {
-        this.health -= amount;
-        if (this instanceof HostileEntity) {
-            if (((HostileEntity) this).getHurtSound() != null) {
-                ((HostileEntity) this).getHurtSound().play();
-            }
-        } else if (this instanceof Player) {
-            screen.game.audio.PLAYER_HIT.play();
-        }
+        health -= amount;
+        iframes = 0.25f;
+    }
+
+    public void damage(float amount, boolean noImmunity) {
+        health -= amount;
     }
 
     public void heal(float amount) {

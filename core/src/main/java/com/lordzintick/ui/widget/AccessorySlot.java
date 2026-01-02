@@ -48,6 +48,7 @@ public class AccessorySlot extends Widget {
     public void click(int button) {
         if (button == Input.Buttons.LEFT && player.skillPoints > 0) {
             player.accessories.add(slottedAccessory);
+            player.equippingSkill = null;
             slottedAccessory.modify(player);
             player.skillPoints--;
             if (player.skillPoints <= 0) {

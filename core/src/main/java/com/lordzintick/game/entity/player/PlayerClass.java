@@ -27,6 +27,7 @@ public enum PlayerClass {
     WARRIOR(
         ListUtil.listOf("slash",  // Commons
             "axe_throw", "mega_slash",  // Uncommons
+            "rage", // Rares
             "whirlwind"), // Legendaries
         ListUtil.listOf(
             "A powerful berserker with a formidable arsenal of weaponry",

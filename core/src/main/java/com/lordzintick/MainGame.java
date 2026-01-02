@@ -6,9 +6,12 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.MusicLoader;
 import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.assets.loaders.resolvers.ClasspathFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,10 +20,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.lordzintick.audio.AudioManager;
+import com.lordzintick.control.GamepadInput;
 import com.lordzintick.control.Input;
+import com.lordzintick.control.Keybinds;
 import com.lordzintick.core.Logger;
 import com.lordzintick.game.accessory.AccessoryTypes;
 import com.lordzintick.game.entity.player.PlayerClass;
@@ -62,6 +68,7 @@ public class MainGame extends ApplicationAdapter {
      * {@link MainGame#font} but 3x the size and with a dark gray border
      */
     public BitmapFont megaFont;
+    public BitmapFont outlinedFont;
     /**
      * The {@link OrthographicCamera} used for world transformation
      */
@@ -92,6 +99,9 @@ public class MainGame extends ApplicationAdapter {
     public int highscore = 0;
     public boolean loadedAssets = false;
     public AudioManager audio;
+    public Keybinds keybinds;
+    public GamepadInput gamepadInput;
+    public int gamepadCursorX, gamepadCursorY;
 
     /**
      * The current {@link BaseScreen} of the game
@@ -104,55 +114,72 @@ public class MainGame extends ApplicationAdapter {
 
     @Override
     public void create() {
+        gamepadCursorX = Gdx.graphics.getWidth() / 2;
+        gamepadCursorY = Gdx.graphics.getHeight() / 2;
         // Initialize the asset manager
+        LOGGER.log("Initializing asset manager...");
         assets = new AssetManager(new InternalFileHandleResolver());
         assets.setLoader(Texture.class, "png", new TextureLoader(new InternalFileHandleResolver()));
         assets.setLoader(com.badlogic.gdx.audio.Sound.class, "wav", new SoundLoader(new InternalFileHandleResolver()));
         assets.setLoader(Music.class, "mp3", new MusicLoader(new InternalFileHandleResolver()));
+
+        // Load textures and audio
+        LOGGER.log("Loading assets...");
+        FileHandle audioFolder = Gdx.files.local("audio");
+        FileHandle texturesFolder = Gdx.files.local("textures");
+        LOGGER.log("Audio folder exists: " + audioFolder.exists());
+        LOGGER.log("Textures folder exists: " + texturesFolder.exists());
+        loadAllAssets(audioFolder);
+        loadAllAssets(texturesFolder);
 
         // Initialize highscore file
         highscoreFile = Gdx.files.local("highscore.txt");
         if (!highscoreFile.exists()) {
             highscoreFile.parent().mkdirs();
             try {
-                highscoreFile.file().createNewFile();
+                if (highscoreFile.file().createNewFile()) {
+                    LOGGER.log("Successfully created highscore file at path " + highscoreFile.file().getAbsolutePath());
+                }
             } catch (IOException e) {
                 LOGGER.log("IOException: " + e.getMessage());
             }
             highscoreFile.writeString("0", false);
+            LOGGER.log("Finished creating highscore file");
         }
 
         // Initialize non-asset related instances
+        LOGGER.log("Creating random and sprite batches...");
         random = new Random(System.currentTimeMillis());
         gameBatch = new SpriteBatch();
         uiBatch = new SpriteBatch();
         mapBatch = new SpriteBatch();
+        LOGGER.log("Creating camera, JSON, and input handler...");
         camera = new OrthographicCamera(2, 2);
         camera.setToOrtho(false, 2, 2);
         json = new Json();
+        keybinds = new Keybinds(this);
         input = new Input(this);
         Gdx.input.setInputProcessor(input);
+        gamepadInput = new GamepadInput(this);
+        Controllers.addListener(gamepadInput);
 
         // Generate fonts
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Monocraft.ttf"));
+        LOGGER.log("Generating fonts...");
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.classpath("Monocraft.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         param.color = Color.WHITE;
         param.size = 22;
         font = fontGenerator.generateFont(param);
+        param.borderColor = Color.BLACK;
+        param.borderWidth = 2;
+        outlinedFont = fontGenerator.generateFont(param);
         param.size = 66;
         param.borderColor = Color.DARK_GRAY;
-        param.borderWidth = 2;
         megaFont = fontGenerator.generateFont(param);
         fontGenerator.dispose();
 
         String highscoreData = highscoreFile.readString().replace("\"", "").trim();
         highscore = Integer.parseInt(highscoreData);
-
-        // Load textures and audio
-        FileHandle audioFolder = Gdx.files.internal("audio");
-        FileHandle texturesFolder = Gdx.files.internal("textures");
-        loadAllAssets(audioFolder);
-        loadAllAssets(texturesFolder);
     }
 
     @Override
@@ -186,6 +213,13 @@ public class MainGame extends ApplicationAdapter {
 
             // Clear the screen to the background color and update screen objects + the camera
             ScreenUtils.clear(screen.getBackgroundColor());
+            if (Controllers.getCurrent() != null && Controllers.getCurrent().isConnected()) {
+                Controller controller = Controllers.getCurrent();
+                gamepadCursorX = MathUtils.clamp(gamepadCursorX + (int) (controller.getAxis(2) * 50), 0, Gdx.graphics.getWidth());
+                gamepadCursorY = MathUtils.clamp(gamepadCursorY + (int) (controller.getAxis(3) * 50), 0, Gdx.graphics.getHeight());
+
+                Gdx.input.setCursorPosition(gamepadCursorX, gamepadCursorY);
+            }
             if (!screen.isPaused()) {
                 screen.update(Gdx.graphics.getDeltaTime());
             }
@@ -253,25 +287,28 @@ public class MainGame extends ApplicationAdapter {
     }
 
     private void loadAllAssets(FileHandle folder) {
-        if (folder.isDirectory()) {
-            for (FileHandle child : folder.list()) {
-                if (child.isDirectory()) {
-                    loadAllAssets(child);
-                } else {
-                    String name = child.name().toLowerCase(Locale.ROOT);
-                    if (name.endsWith("png")) {
-                        LOGGER.log("Loading image file " + child.path());
-                        assets.load(child.path(), Texture.class);
-                    } else if (name.endsWith("wav")) {
-                        LOGGER.log("Loading sound file " + child.path());
-                        assets.load(child.path(), Sound.class);
-                    } else if (name.endsWith("mp3")) {
-                        LOGGER.log("Loading music file " + child.path());
-                        assets.load(child.path(), Music.class);
-                    }
+        LOGGER.log("Loading assets inside of folder " + folder.file().getAbsolutePath());
+        int count = 0;
+        for (FileHandle child : folder.list()) {
+            if (child.isDirectory()) {
+                loadAllAssets(child);
+            } else {
+                String name = child.name().toLowerCase(Locale.ROOT);
+                if (name.endsWith("png")) {
+                    LOGGER.log("Loading image file " + child.path());
+                    assets.load(child.path(), Texture.class);
+                } else if (name.endsWith("wav")) {
+                    LOGGER.log("Loading sound file " + child.path());
+                    assets.load(child.path(), Sound.class);
+                } else if (name.endsWith("mp3")) {
+                    LOGGER.log("Loading music file " + child.path());
+                    assets.load(child.path(), Music.class);
                 }
             }
+            count++;
         }
+        LOGGER.log("Finished loading files from folder " + folder.file().getAbsolutePath());
+        LOGGER.log("Total files loaded: " + count);
     }
 
     /**

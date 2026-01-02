@@ -3,6 +3,7 @@ package com.lordzintick.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
 import com.lordzintick.MainGame;
 import com.lordzintick.audio.AudioManager;
@@ -76,6 +77,10 @@ public class MainGameScreen extends AbstractGameScreen {
             new AccessorySlot(this, player, getMidX() + 74, getMidY() + 312)
         };
         Collections.addAll(widgets, accessorySlots);
+
+        for (int i = 0; i < player.equippedSkills.length; i++) {
+            skillSlots[i].slottedSkill = player.equippedSkills[i];
+        }
     }
 
     public Player getPlayer() {return player;}
@@ -123,14 +128,17 @@ public class MainGameScreen extends AbstractGameScreen {
     public void update(float deltaTime) {
         super.update(deltaTime);
 
+        if (player.score > game.highscore) {
+            game.highscore = player.score;
+        }
+
         healthLabel.text = new Text("HP: " + (int) player.health + "/" + player.getMaxHealth()).setColor(Color.RED);
+        healthLabel.x = getMidX() - UIUtil.getFontStringWidth(healthLabel.text.text, game.font) / 2;
         manaLabel.text = new Text("Mana: " + player.mana + "/" + player.maxMana).setColor(Color.BLUE);
+        manaLabel.x = getMidX() - UIUtil.getFontStringWidth(manaLabel.text.text, game.font) / 2;
         scoreLabel.text = new Text("Score: " + player.score);
         levelLabel.text = new Text("Level " + player.level + " (" + (int) player.xp + "/" + player.getRequiredXP() + ")").setColor(Color.GOLDENROD);
-
-        for (int i = 0; i < player.equippedSkills.length; i++) {
-            skillSlots[i].slottedSkill = player.equippedSkills[i];
-        }
+        levelLabel.x = getMidX() - UIUtil.getFontStringWidth(levelLabel.text.text, game.font) / 2;
 
         spawnCooldown -= deltaTime;
         if (spawnCooldown <= 0) {
@@ -225,8 +233,9 @@ public class MainGameScreen extends AbstractGameScreen {
             skipLevelupButton.visible = false;
         }
 
-        if (player.score > game.highscore) {
-            game.highscore = player.score;
+        if (player.remainingDashCooldown > 0) {
+            String text = Math.floor(player.remainingDashCooldown * 10) / 10 + "s";
+            game.font.draw(game.uiBatch, text, getMidX() - UIUtil.getFontStringWidth(text, game.font) / 2, (int) (158 + game.font.getLineHeight() * 4.5));
         }
     }
 

@@ -36,7 +36,7 @@ public class StatModifier {
             } else if (targets.size() == 2) {
                 builder.append(targets.get(0).replace("_", " ")).append(" and ").append(targets.get(1).replace("_", " "));
             } else if (!targets.isEmpty()) {
-                builder.append(targets.getFirst().replace("_", " "));
+                builder.append(targets.get(0).replace("_", " "));
             }
         }
 

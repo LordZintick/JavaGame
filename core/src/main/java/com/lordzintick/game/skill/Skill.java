@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class Skill {
     public final SkillType type;
-    public int level = 1;
     private float remainingCooldown;
 
     Skill(SkillType type) {
@@ -50,7 +49,7 @@ public class Skill {
             if (!type.castSound.stream) {
                 type.castSound.play();
             }
-            type.action.accept(player, level);
+            type.action.accept(player, player.getSkillDamageMultiplier(type));
         }
     }
 

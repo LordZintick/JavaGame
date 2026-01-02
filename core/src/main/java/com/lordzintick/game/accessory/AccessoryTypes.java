@@ -71,6 +71,27 @@ public final class AccessoryTypes {
             ), ListUtil.listOf(
                 new Text("You gain more XP from defeated enemies")
             )));
+
+        register("dash_speed",
+            new AccessoryType(icons[1][1], "Speedster", 3, true, mult -> ListUtil.listOf(
+                StatModifierTypes.INCREASE_DASH_SPEED.getInstance(0.2f * mult)
+            ), ListUtil.listOf(
+                new Text("Your speed increases more when dashing")
+            )));
+
+        register("dash_time",
+            new AccessoryType(icons[1][2], "Endurance", 2, true, mult -> ListUtil.listOf(
+                StatModifierTypes.INCREASE_DASH_TIME.getInstance(0.1f * mult)
+            ), ListUtil.listOf(
+                new Text("You dash for longer")
+            )));
+
+        register("dash_cooldown",
+            new AccessoryType(icons[1][3], "Speedy Recovery", 3, true, mult -> ListUtil.listOf(
+                StatModifierTypes.DECREASE_DASH_COOLDOWN.getInstance(0.05f * mult)
+            ), ListUtil.listOf(
+                new Text("You can dash more frequently")
+            )));
     }
 
     private void register(String id, AccessoryType accessoryType) {

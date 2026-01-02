@@ -24,7 +24,7 @@ public class BurnEffect extends Effect {
         fireTicks -= deltaTime;
         if (fireTicks <= 0) {
             fireTicks = entity instanceof Player ? 2f : 0.5f;
-            entity.damage(level);
+            entity.damage(level, true);
         }
 
         entity.screen.addParticle(

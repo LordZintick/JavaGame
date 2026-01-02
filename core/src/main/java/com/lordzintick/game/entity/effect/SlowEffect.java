@@ -12,16 +12,17 @@ public class SlowEffect extends Effect {
 
     @Override
     public void apply(Entity entity) {
-        entity.speed *= 1 - ((float) level / 10);
+        entity.speedMultiplier -= (float) level / 10;
+    }
+
+    @Override
+    public void tick(Entity entity, float deltaTime) {
         entity.colorModifier = Color.BLUE;
     }
 
     @Override
-    public void tick(Entity entity, float deltaTime) {}
-
-    @Override
     public void end(Entity entity) {
-        entity.speed *= 1 + ((float) level / 10);
+        entity.speedMultiplier += (float) level / 10;
         entity.colorModifier = Color.WHITE;
     }
 }

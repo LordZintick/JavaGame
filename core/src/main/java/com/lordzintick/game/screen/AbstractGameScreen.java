@@ -22,8 +22,6 @@ import java.util.Iterator;
 public abstract class AbstractGameScreen extends BaseScreen {
     private final ArrayList<AbstractGameObject> objects = new ArrayList<>();
     private final ArrayList<AbstractGameObject> queuedObjects = new ArrayList<>();
-    private final ArrayList<Particle> particles = new ArrayList<>();
-    private final ArrayList<Particle> queuedParticles = new ArrayList<>();
 
     /**
      * Constructs a new {@link AbstractGameScreen} with the provided {@link MainGame}
@@ -42,41 +40,35 @@ public abstract class AbstractGameScreen extends BaseScreen {
     @Override
     public void update(float deltaTime) {
         // Iterate through all game objects and update them
-        for (AbstractGameObject gameObject : objects) {
-            gameObject.update(deltaTime);
-            for (AbstractGameObject gameObject1 : objects) {
-                if (gameObject == gameObject1) continue;
-                if (gameObject.collisionRect.overlaps(gameObject1.collisionRect)) {
-                    gameObject.collide(gameObject1);
-                    gameObject1.collide(gameObject);
-                }
-            }
-        }
-
-        for (Particle particle : particles) {
-            particle.update(deltaTime);
-        }
-
-        for (int i = objects.size() - 1; i > 0; i--) {
-            AbstractGameObject gameObject = objects.get(i);
+        Iterator<AbstractGameObject> iterator = objects.iterator();
+        while (iterator.hasNext()) {
+            AbstractGameObject gameObject = iterator.next();
             if (gameObject.shouldRemove) {
-                objects.remove(gameObject);
+                iterator.remove();
                 gameObject.dispose();
-            }
-        }
+            } else {
+                gameObject.update(deltaTime);
 
-        for (int i = particles.size() - 1; i > 0; i--) {
-            Particle particle = particles.get(i);
-            if (particle.shouldRemove) {
-                particles.remove(particle);
+                if (!(gameObject instanceof Particle)) {
+                    Iterator<AbstractGameObject> iterator1 = objects.iterator();
+                    while (iterator1.hasNext()) {
+                        AbstractGameObject gameObject1 = iterator1.next();
+
+                        if (gameObject == gameObject1
+                            || Math.abs(gameObject.x - gameObject1.x) > Math.max(gameObject.collisionRect.width * gameObject.scale, gameObject1.collisionRect.width * gameObject1.scale)
+                            || Math.abs(gameObject.y - gameObject1.y) > Math.max(gameObject.collisionRect.height * gameObject.scale, gameObject1.collisionRect.height * gameObject1.scale)
+                            || gameObject1 instanceof Particle) continue;
+                        if (gameObject.collisionRect.overlaps(gameObject1.collisionRect)) {
+                            gameObject.collide(gameObject1);
+                            gameObject1.collide(gameObject);
+                        }
+                    }
+                }
             }
         }
 
         objects.addAll(queuedObjects);
         queuedObjects.clear();
-
-        particles.addAll(queuedParticles);
-        queuedParticles.clear();
     }
 
     public void queueAddObject(AbstractGameObject toAdd) {
@@ -84,12 +76,18 @@ public abstract class AbstractGameScreen extends BaseScreen {
     }
 
     public void addParticle(TextureRegion[] frames, float x, float y, Vector4 velocity, float scale, float frameTime, float lifeTime) {
+        addParticle(frames, x, y, false, velocity, scale, frameTime, lifeTime);
+    }
+
+    public void addParticle(TextureRegion[] frames, float x, float y, boolean extraLogging, Vector4 velocity, float scale, float frameTime, float lifeTime) {
         if (Math.abs(x) >= Gdx.graphics.getWidth() * 2 || Math.abs(y) >= Gdx.graphics.getWidth() * 2 || x == 0 || y == 0) return;
 
-        Particle particle = new Particle(frames, scale, frameTime, lifeTime);
-        particle.pos = new Vector2(x, y);
+        Particle particle = new Particle(this, frames, scale, frameTime, lifeTime);
+        particle.x = x;
+        particle.y = y;
+        particle.extraLogging = extraLogging;
         particle.velocity = velocity;
-        queuedParticles.add(particle);
+        queuedObjects.add(particle);
     }
 
     @Override
@@ -97,10 +95,6 @@ public abstract class AbstractGameScreen extends BaseScreen {
         // Iterate through all game objects and render them
         for (AbstractGameObject gameObject : objects) {
             gameObject.render(game.gameBatch, deltaTime);
-        }
-
-        for (Particle particle : particles) {
-            particle.render(game.gameBatch, deltaTime);
         }
     }
 

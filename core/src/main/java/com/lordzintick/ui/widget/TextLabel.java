@@ -32,6 +32,6 @@ public class TextLabel extends Widget {
     @Override
     public void render(Batch batch, float deltaTime) {
         // Use UIUtil to render the Text with all of its configured formatting
-        UIUtil.renderText(screen.game, batch, text, x, y, width, false);
+        UIUtil.renderOutlinedText(screen.game, batch, text, x, y, width, false);
     }
 }

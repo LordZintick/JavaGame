@@ -23,9 +23,9 @@ public final class Input implements InputProcessor {
     @Override
     public boolean keyDown(int key) {
         // Iterate through all the keybinds
-        for (Keybind keybind : Keybinds.KEYBINDS.values()) {
+        for (Keybind keybind : game.keybinds.KEYBINDS.values()) {
             // If the keybind's key is the one that was pressed, run the keybind's action and set it to pressed
-            if (keybind.defaultKey == key && keybind.checkContext(game.screen)) {
+            if (keybind.defaultKey == key && keybind.checkContext(game.screen) && keybind.context != Keybind.Context.GAMEPAD) {
                 keybind.isPressed = true;
                 keybind.action.run();
             }
@@ -36,9 +36,9 @@ public final class Input implements InputProcessor {
     @Override
     public boolean keyUp(int key) {
         // Iterate through all the keybinds
-        for (Keybind keybind : Keybinds.KEYBINDS.values()) {
+        for (Keybind keybind : game.keybinds.KEYBINDS.values()) {
             // If the keybind's key is the one that was pressed, set it unpressed
-            if (keybind.defaultKey == key && keybind.checkContext(game.screen)) {
+            if (keybind.defaultKey == key && keybind.checkContext(game.screen) && keybind.context != Keybind.Context.GAMEPAD) {
                 keybind.isPressed = false;
             }
         }

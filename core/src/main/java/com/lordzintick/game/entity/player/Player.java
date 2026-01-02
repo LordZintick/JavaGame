@@ -12,6 +12,7 @@ import com.lordzintick.game.accessory.Accessory;
 import com.lordzintick.game.entity.Entity;
 import com.lordzintick.game.entity.effect.Effect;
 import com.lordzintick.game.screen.AbstractGameScreen;
+import com.lordzintick.game.screen.MainGameScreen;
 import com.lordzintick.game.skill.Skill;
 import com.lordzintick.game.skill.SkillType;
 import com.lordzintick.game.skill.SkillTypes;
@@ -44,6 +45,12 @@ public class Player extends Entity {
     public float blockPower = 0;
     public float manaRegenMultiplier = 1;
     public float xpMultiplier = 1;
+    public float dashTime = 0.5f;
+    public float dashSpeed = 1f;
+    private float dashTicks = 0;
+    private boolean stoppedDashing = true;
+    public float dashCooldown = 5f;
+    public float remainingDashCooldown = 0;
 
     /**
      * @param screen The {@link AbstractGameScreen} containing this player
@@ -70,6 +77,9 @@ public class Player extends Entity {
                 health = maxHealth;
                 mana = maxMana;
                 equippedSkills = new Skill[] {screen.game.skillTypes.SKILL_TYPES.get(playerClass.startSkill).getInstance(), null, null};
+                for (int i = 0; i < equippedSkills.length; i++) {
+                    ((MainGameScreen) screen).skillSlots[i].slottedSkill = equippedSkills[i];
+                }
             }
         }
 
@@ -82,60 +92,87 @@ public class Player extends Entity {
             mana++;
         }
 
+        if (dashTicks > 0) {
+            dashTicks -= deltaTime;
+        } else if (!stoppedDashing) {
+            stoppedDashing = true;
+            speedMultiplier -= dashSpeed;
+        }
+
         if (levelupTicks > 0) {
             levelupTicks -= deltaTime;
             screen.addParticle(
                 levelupParticles,
-                x + (float) width / 2, y + (float) height / 2,
+                x + (float) width / 2, y + (float) height / 2, true,
                 new Vector4(screen.game.random.nextFloat(-100, 100), screen.game.random.nextFloat(-100, 100), 0, 0),
-                5f, 0.1f, 3f
+                5f, 0.1f, 1f
             );
         }
 
-        if (screen.game.input.mouseButtonsPressed[0] && equippedSkills[0] != null && ticks >= 1f) {
+        remainingDashCooldown -= deltaTime;
+        if (screen.game.keybinds.DASH.isPressed && dashTicks <= 0 && remainingDashCooldown <= 0) {
+            screen.game.audio.DASH.play();
+            dashTicks = dashTime;
+            speedMultiplier += dashSpeed;
+            stoppedDashing = false;
+            remainingDashCooldown = dashCooldown;
+        }
+
+        if ((screen.game.input.mouseButtonsPressed[0] || screen.game.keybinds.ATTACK_1.isPressed) && equippedSkills[0] != null && ticks >= 1f) {
             equippedSkills[0].cast(this);
         }
 
-        if (screen.game.input.mouseButtonsPressed[2] && equippedSkills[1] != null && ticks >= 1f) {
+        if ((screen.game.input.mouseButtonsPressed[2] || screen.game.keybinds.ATTACK_2.isPressed) && equippedSkills[1] != null && ticks >= 1f) {
             equippedSkills[1].cast(this);
         }
 
-        if (screen.game.input.mouseButtonsPressed[1] && equippedSkills[2] != null && ticks >= 1f) {
+        if ((screen.game.input.mouseButtonsPressed[1] || screen.game.keybinds.ATTACK_3.isPressed) && equippedSkills[2] != null && ticks >= 1f) {
             equippedSkills[2].cast(this);
         }
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
-        if (Keybinds.UP.isPressed) {
+        if (screen.game.keybinds.UP.isPressed || screen.game.keybinds.ARROW_UP.isPressed || screen.game.keybinds.GAMEPAD_UP.isPressed) {
             moving = true;
             direction = Direction.UP;
             if (y + height <= w - w / 16)
-                y += speed * deltaTime;
+                y += speed * deltaTime * speedMultiplier;
         }
 
-        if (Keybinds.DOWN.isPressed) {
+        if (screen.game.keybinds.DOWN.isPressed || screen.game.keybinds.ARROW_DOWN.isPressed || screen.game.keybinds.GAMEPAD_DOWN.isPressed) {
             moving = true;
             direction = Direction.DOWN;
             if (y >= w / 32)
-                y -= speed * deltaTime;
+                y -= speed * deltaTime * speedMultiplier;
         }
 
-        if (Keybinds.LEFT.isPressed) {
+        if (screen.game.keybinds.LEFT.isPressed || screen.game.keybinds.ARROW_LEFT.isPressed || screen.game.keybinds.GAMEPAD_LEFT.isPressed) {
             moving = true;
             direction = Direction.LEFT;
             if (x >= w / 32)
-                x -= speed * deltaTime;
+                x -= speed * deltaTime * speedMultiplier;
         }
 
-        if (Keybinds.RIGHT.isPressed) {
+        if (screen.game.keybinds.RIGHT.isPressed || screen.game.keybinds.ARROW_RIGHT.isPressed || screen.game.keybinds.GAMEPAD_RIGHT.isPressed) {
             moving = true;
             direction = Direction.RIGHT;
             if (x + width <= w - w / 10)
-                x += speed * deltaTime;
+                x += speed * deltaTime * speedMultiplier;
         }
 
-        if (!Keybinds.UP.isPressed && !Keybinds.DOWN.isPressed && !Keybinds.LEFT.isPressed && !Keybinds.RIGHT.isPressed) {
+        if (!screen.game.keybinds.UP.isPressed
+            && !screen.game.keybinds.ARROW_UP.isPressed
+            && !screen.game.keybinds.GAMEPAD_UP.isPressed
+            && !screen.game.keybinds.DOWN.isPressed
+            && !screen.game.keybinds.ARROW_DOWN.isPressed
+            && !screen.game.keybinds.GAMEPAD_DOWN.isPressed
+            && !screen.game.keybinds.LEFT.isPressed
+            && !screen.game.keybinds.ARROW_LEFT.isPressed
+            && !screen.game.keybinds.GAMEPAD_LEFT.isPressed
+            && !screen.game.keybinds.RIGHT.isPressed
+            && !screen.game.keybinds.ARROW_RIGHT.isPressed
+            && !screen.game.keybinds.GAMEPAD_RIGHT.isPressed) {
             moving = false;
         }
 
@@ -182,7 +219,15 @@ public class Player extends Entity {
         return level * 10;
     }
 
+    public float getMinimumCooldown() {
+        return Math.min(equippedSkills[0] == null ? 0.25f : (equippedSkills[0].type.cooldown * getSkillCooldownMultiplier(equippedSkills[0].type)),
+            Math.min(equippedSkills[1] == null ? 0.25f : (equippedSkills[1].type.cooldown * getSkillCooldownMultiplier(equippedSkills[1].type)),
+                equippedSkills[2] == null ? 0.25f : (equippedSkills[2].type.cooldown * getSkillCooldownMultiplier(equippedSkills[2].type)))
+        );
+    }
+
     public void tryDamage(float amount) {
+        iframes = 3f;
         float val = screen.game.random.nextFloat();
         if (val <= blockPower && blockPower > 0) {
             screen.game.audio.BLOCK.play();

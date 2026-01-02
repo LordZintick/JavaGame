@@ -2,6 +2,7 @@ package com.lordzintick.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
@@ -10,6 +11,7 @@ import com.lordzintick.game.entity.effect.Effect;
 import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.util.Direction;
+import com.lordzintick.util.MathUtil;
 
 import java.util.ArrayList;
 
@@ -45,8 +47,8 @@ public abstract class HostileEntity extends Entity {
     public void update(float deltaTime) {
         super.update(deltaTime);
         moveVector = new Vector2(player.x, player.y).sub(x, y).nor();
-        x += moveVector.x * deltaTime * speed;
-        y += moveVector.y * deltaTime * speed;
+        x += moveVector.x * deltaTime * speed * speedMultiplier;
+        y += moveVector.y * deltaTime * speed * speedMultiplier;
 
         moving = moveVector.len() > 0;
 
@@ -80,11 +82,27 @@ public abstract class HostileEntity extends Entity {
     }
 
     @Override
+    public void damage(float amount) {
+        super.damage(amount);
+        iframes = Math.min(0.25f, player.getMinimumCooldown());
+        if (getHurtSound() != null) {
+            getHurtSound().play();
+        }
+    }
+
+    @Override
+    public void damage(float amount, boolean noImmunity) {
+        super.damage(amount, noImmunity);
+        if (getHurtSound() != null) {
+            getHurtSound().play();
+        }
+    }
+
+    @Override
     public void collide(AbstractGameObject other) {
-        if (other instanceof Player && ((Player) other).iframes <= 0) {
+        if (other instanceof Player && ((Entity) other).iframes <= 0) {
             this.shouldRemove = true;
-            ((Player) other).iframes = 3f;
-            ((Player) other).tryDamage(damage);
+            ((Entity) other).damage(damage);
         }
     }
 

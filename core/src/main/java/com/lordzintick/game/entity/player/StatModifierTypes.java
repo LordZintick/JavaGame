@@ -58,6 +58,21 @@ public final class StatModifierTypes {
         "+%ah% xp gain"
     ));
 
+    public static final StatModifierType INCREASE_DASH_SPEED = register("increase_dash_speed", new StatModifierType(
+        (player, amount, targets) -> player.dashSpeed += amount,
+        "+%ah% dash speed"
+    ));
+
+    public static final StatModifierType INCREASE_DASH_TIME = register("increase_dash_time", new StatModifierType(
+        (player, amount, targets) -> player.dashTime += amount,
+        "+%ah% dash time"
+    ));
+
+    public static final StatModifierType DECREASE_DASH_COOLDOWN = register("decrease_dash_cooldown", new StatModifierType(
+        (player, amount, targets) -> player.dashCooldown -= amount,
+        "-%ah% dash cooldown"
+    ));
+
     private static <T extends StatModifierType> T register(String id, T t) {
         if (STAT_MODIFIER_TYPES.containsKey(id))
             throw new IllegalArgumentException("ID already registered!");

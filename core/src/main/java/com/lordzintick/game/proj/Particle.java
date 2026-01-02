@@ -4,11 +4,15 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector4;
+import com.lordzintick.core.Logger;
 import com.lordzintick.core.Renderable;
 import com.lordzintick.core.Updateable;
+import com.lordzintick.game.AbstractGameObject;
+import com.lordzintick.game.screen.AbstractGameScreen;
 
-public class Particle implements Renderable, Updateable {
-    public Vector2 pos;
+public class Particle extends AbstractGameObject {
+    private static final Logger LOGGER = new Logger(Particle.class);
+
     public Vector4 velocity;
     public final TextureRegion[] frames;
     public float scale;
@@ -17,10 +21,11 @@ public class Particle implements Renderable, Updateable {
     private int frame = 0;
     public final float frameTime;
     private final float lifeTime;
-    public boolean shouldRemove = false;
     private float angle = 0;
+    public boolean extraLogging = false;
 
-    public Particle(TextureRegion[] frames, float scale, float frameTime, float lifeTime) {
+    public Particle(AbstractGameScreen screen, TextureRegion[] frames, float scale, float frameTime, float lifeTime) {
+        super(screen);
         this.frames = frames;
         this.scale = scale;
         this.frameTime = frameTime;
@@ -40,18 +45,20 @@ public class Particle implements Renderable, Updateable {
         }
 
         TextureRegion frameToDraw = frames[frame];
-        batch.draw(frameToDraw, pos.x, pos.y, 0, 0, frameToDraw.getRegionWidth(), frameToDraw.getRegionHeight(), scale, scale, angle);
+        batch.draw(frameToDraw, x, y, 0, 0, frameToDraw.getRegionWidth(), frameToDraw.getRegionHeight(), scale, scale, angle);
     }
 
     @Override
     public void update(float deltaTime) {
-        pos.add(new Vector2(velocity.x, velocity.y).scl(deltaTime));
+        x += velocity.x * deltaTime;
+        y += velocity.y * deltaTime;
         scale = Math.max(0, scale + velocity.z * deltaTime);
         angle += velocity.w * deltaTime;
 
         ticks += deltaTime;
         if (ticks >= lifeTime || scale <= 0) {
             shouldRemove = true;
+            if (extraLogging) LOGGER.log("SHOULD REMOVE");
         }
     }
 }

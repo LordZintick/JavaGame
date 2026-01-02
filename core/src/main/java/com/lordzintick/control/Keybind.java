@@ -1,5 +1,6 @@
 package com.lordzintick.control;
 
+import com.badlogic.gdx.Input;
 import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.ui.screen.AbstractUIScreen;
 import com.lordzintick.util.BaseScreen;
@@ -25,12 +26,17 @@ public class Keybind {
         this.action = action;
     }
 
+    public static Keybind unknown() {
+        return new Keybind(Input.Keys.UNKNOWN, Context.UI, () -> {});
+    }
+
     public boolean checkContext(BaseScreen screen) {
-        return (screen instanceof AbstractUIScreen && context == Context.UI) || (screen instanceof AbstractGameScreen && context == Context.GAME);
+        return (screen instanceof AbstractUIScreen && context == Context.UI) || (screen instanceof AbstractGameScreen && (context == Context.GAME || context == Context.GAMEPAD));
     }
 
     public enum Context {
         UI,
-        GAME
+        GAME,
+        GAMEPAD
     }
 }

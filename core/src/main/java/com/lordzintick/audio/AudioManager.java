@@ -27,6 +27,8 @@ public final class AudioManager {
     public final Sound MEGA_KILL;
     public final Sound LASER;
     public final Sound LASER_AMBIENT;
+    public final Sound ROAR;
+    public final Sound DASH;
 
     public AudioManager(MainGame game) {
         this.game = game;
@@ -47,6 +49,8 @@ public final class AudioManager {
         MEGA_KILL = register("mega_kill", new Sound(game, "audio/sfx/mega_kill.wav", false, 1, false));
         LASER = register("laser", new Sound(game, "audio/sfx/laser.wav", false, 1, false));
         LASER_AMBIENT = register("laser_ambient", new Sound(game, "audio/sfx/laser_ambient.wav", false, 0.25f, false));
+        ROAR = register("roar", new Sound(game, "audio/sfx/roar.wav", false, 1, false));
+        DASH = register("dash", new Sound(game, "audio/sfx/dash.wav", false, 1, false));
     }
 
     /**

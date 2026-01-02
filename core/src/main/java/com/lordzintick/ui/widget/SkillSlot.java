@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.lordzintick.core.Logger;
 import com.lordzintick.game.entity.player.Player;
+import com.lordzintick.game.screen.MainGameScreen;
 import com.lordzintick.game.skill.Skill;
 import com.lordzintick.util.BaseScreen;
 
@@ -39,7 +40,7 @@ public class SkillSlot extends Widget {
             batch.setColor(Color.WHITE);
 
             if (index < 3) {
-                float cooldownValue = slottedSkill.getRemainingCooldown() / slottedSkill.type.cooldown;
+                float cooldownValue = slottedSkill.getRemainingCooldown() / (slottedSkill.type.cooldown * player.getSkillCooldownMultiplier(slottedSkill.type));
                 batch.draw(screen.game.cooldownTexture, x, y, width, Math.max(0, height * cooldownValue));
             }
 
@@ -58,6 +59,7 @@ public class SkillSlot extends Widget {
                 LOGGER.log("Equipping spell \"" + player.equippingSkill.type.displayName + "\" into slot " + index);
                 slottedSkill = player.equippingSkill;
                 player.equippedSkills[index] = player.equippingSkill;
+                ((MainGameScreen) player.screen).skillSlots[index].slottedSkill = player.equippingSkill;
                 player.equippingSkill = null;
                 player.skillPoints--;
                 if (player.skillPoints <= 0) {

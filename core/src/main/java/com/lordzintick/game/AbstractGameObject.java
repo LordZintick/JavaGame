@@ -12,6 +12,7 @@ import com.lordzintick.util.BaseScreen;
  */
 public abstract class AbstractGameObject extends PositionedRenderable implements Updateable {
     public int width, height;
+    public float scale;
     public boolean shouldRemove = false;
     public final AbstractGameScreen screen;
     public Rectangle collisionRect;
