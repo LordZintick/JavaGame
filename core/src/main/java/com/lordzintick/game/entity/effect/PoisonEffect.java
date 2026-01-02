@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector4;
 import com.lordzintick.MainGame;
 import com.lordzintick.game.entity.Entity;
+import com.lordzintick.game.entity.player.Player;
 
 public class PoisonEffect extends Effect {
     private float poisonTicks = 1f;
 
     public PoisonEffect(MainGame game, float time, int level) {
-        super(game.effectAtlas[0][1], game, time, level);
+        super(game.effectAtlas[1][0], game, time, level);
     }
 
     @Override
@@ -22,7 +23,7 @@ public class PoisonEffect extends Effect {
     public void tick(Entity entity, float deltaTime) {
         poisonTicks -= deltaTime;
         if (poisonTicks <= 0) {
-            poisonTicks = 1f;
+            poisonTicks = entity instanceof Player ? 3f : 1f;
             entity.damage(level * 2);
         }
 

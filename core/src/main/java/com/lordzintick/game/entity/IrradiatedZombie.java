@@ -15,16 +15,16 @@ public class IrradiatedZombie extends HostileEntity {
      * @param screen  The {@link AbstractGameScreen} containing this entity
      */
     public IrradiatedZombie(AbstractGameScreen screen, Player player) {
-        super(screen, new Texture("textures/game/mobs/irradiated_zombie.png"), 4, 8, player);
+        super(screen, screen.game.assets.get("textures/game/mobs/irradiated_zombie.png"), 4, 8, player);
         scale = 11.5f;
     }
 
     @Override
     public void collide(AbstractGameObject other) {
-        super.collide(other);
         if (other instanceof Player && ((Player) other).iframes <= 0) {
             ((Player) other).applyEffect(new BurnEffect(screen.game, 5, 1));
         }
+        super.collide(other);
     }
 
     @Override
@@ -49,12 +49,12 @@ public class IrradiatedZombie extends HostileEntity {
 
     @Override
     public Sound getHurtSound() {
-        return AudioManager.MEGA_HIT;
+        return screen.game.audio.MEGA_HIT;
     }
 
     @Override
     public Sound getDeathSound() {
-        return AudioManager.MEGA_KILL;
+        return screen.game.audio.MEGA_KILL;
     }
 
     @Override
@@ -64,6 +64,6 @@ public class IrradiatedZombie extends HostileEntity {
 
     @Override
     public int getXP() {
-        return 10;
+        return 25;
     }
 }

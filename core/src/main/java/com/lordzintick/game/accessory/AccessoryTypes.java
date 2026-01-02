@@ -21,7 +21,7 @@ public final class AccessoryTypes {
 
     public AccessoryTypes(MainGame game) {
         this.game = game;
-        TextureRegion[][] icons = TextureRegion.split(new Texture("textures/game/accessories.png"), 8, 8);
+        TextureRegion[][] icons = TextureRegion.split(game.assets.get("textures/game/accessories.png"), 8, 8);
 
         register("damage",
             new AccessoryType(icons[0][0], "Powerful Strikes", 8, false, mult -> ListUtil.listOf(
@@ -46,7 +46,7 @@ public final class AccessoryTypes {
 
         register("block_power",
             new AccessoryType(icons[0][3], "Ironskin", 5, true, mult -> ListUtil.listOf(
-                StatModifierTypes.INCREASE_BLOCK_POWER.getInstance(0.01f * mult)
+                StatModifierTypes.INCREASE_BLOCK_POWER.getInstance(0.02f * mult)
             ), ListUtil.listOf(
                 new Text("Your chance of blocking attacks is increased")
             )));
@@ -55,7 +55,7 @@ public final class AccessoryTypes {
             new AccessoryType(icons[0][4], "Relentless", 6, false, mult -> ListUtil.listOf(
                 StatModifierTypes.INCREASE_ATTACK_SPEED.getInstance(0.05f * mult)
             ), ListUtil.listOf(
-                new Text("You use your skills more often")
+                new Text("You can use your skills more often")
             )));
 
         register("mana_regen",

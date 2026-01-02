@@ -8,19 +8,26 @@ import java.util.function.Consumer;
 
 public enum PlayerClass {
     MAGE(
-        ListUtil.listOf("fireball", "iceball", "poison_nova", "lightning_bolt", "plasma_bolt"),
+        ListUtil.listOf("fireball", // Commons
+            "iceball", "acidball", "waterball", "lightningball", "flowerball",  // Uncommons
+            "poison_nova", "lightning_bolt", "plasma_bolt", // Rares
+            "wave", // Epics
+            "laser_beam"), // Legendaries
         ListUtil.listOf(
             "The classic mage",
-            "Has an assortment of powerful magical abilities and +20 max mana",
-            "Also gets +10% attack speed"
+            "Has a large assortment of magical abilities at their fingertips",
+            "Due to extensive magical studying, gets +10% attack speed, +20 max mana, and +10% mana regeneration rate"
         ),
         "fireball", player -> {
             player.maxMana += 20;
             player.globalCooldownMultiplier = 0.9f;
+            player.manaRegenMultiplier = 0.9f;
         }
     ),
     WARRIOR(
-        ListUtil.listOf("slash", "axe_throw", "mega_slash", "whirlwind"),
+        ListUtil.listOf("slash",  // Commons
+            "axe_throw", "mega_slash",  // Uncommons
+            "whirlwind"), // Legendaries
         ListUtil.listOf(
             "A powerful berserker with a formidable arsenal of weaponry",
             "Gets a +100% bonus to max health & +10 block power"

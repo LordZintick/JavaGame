@@ -72,18 +72,22 @@ public class SelectClassScreen extends AbstractUIScreen {
         super.update(deltaTime);
         classnameLabel.text = new Text(game.selectedPlayerClass.name());
 
+        float width = 0;
         StringBuilder descriptionBuilder = new StringBuilder();
         for (String line : game.selectedPlayerClass.description) {
             descriptionBuilder.append(line).append("\n");
+            width = Math.max(width, UIUtil.getFontStringWidth(line, game.font));
         }
         classDescriptionLabel.text = new Text(descriptionBuilder.toString());
+        classDescriptionLabel.x = getMidX() - width / 2;
 
-        skinDisplay.changeClass(game.selectedPlayerClass);
+        if (skinDisplay.getDisplayedClass() != game.selectedPlayerClass)
+            skinDisplay.changeClass(game.selectedPlayerClass);
     }
 
     @Override
     public Sound getBackgroundMusic() {
-        return AudioManager.TITLE_MUSIC;
+        return game.audio.TITLE_MUSIC;
     }
 
     @Override

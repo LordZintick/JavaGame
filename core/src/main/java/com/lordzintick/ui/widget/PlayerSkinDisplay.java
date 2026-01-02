@@ -19,14 +19,15 @@ public class PlayerSkinDisplay extends Widget {
         this.x = x;
         this.y = y;
         this.playerClass = playerClass;
-        classFrames = TextureRegion.split(new Texture("textures/game/player/player_" + playerClass.name().toLowerCase(Locale.ROOT) + ".png"), 6, 12);
+        classFrames = screen.game.playerTextures.get(playerClass);
     }
 
     public void changeClass(PlayerClass newClass) {
         playerClass = newClass;
-        classFrames[0][0].getTexture().dispose();
-        classFrames = TextureRegion.split(new Texture("textures/game/player/player_" + playerClass.name().toLowerCase(Locale.ROOT) + ".png"), 6, 12);
+        classFrames = screen.game.playerTextures.get(playerClass);
     }
+
+    public PlayerClass getDisplayedClass() {return playerClass;}
 
     @Override
     public void render(Batch batch, float deltaTime) {

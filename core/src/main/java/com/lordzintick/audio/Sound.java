@@ -2,6 +2,7 @@ package com.lordzintick.audio;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.lordzintick.MainGame;
 import com.lordzintick.core.Logger;
 
 /**
@@ -24,18 +25,18 @@ public class Sound {
      * @param volume The volume this sound should play at
      * @param stream Whether this sound should stream instead of play directly. If this is true, it is considered music. If false, it is a sound effect
      */
-    public Sound(String fileName, boolean looping, float volume, boolean stream) {
+    public Sound(MainGame game, String fileName, boolean looping, float volume, boolean stream) {
         this.fileName = fileName;
         this.looping = looping;
         this.volume = volume;
         this.stream = stream;
 
         if (stream) {
-            music = Gdx.audio.newMusic(Gdx.files.internal(fileName));
+            music = game.assets.get(fileName);
             music.setLooping(looping);
             music.setVolume(volume);
         } else {
-            sfx = Gdx.audio.newSound(Gdx.files.internal(fileName));
+            sfx = game.assets.get(fileName);
         }
     }
 

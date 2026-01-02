@@ -17,7 +17,7 @@ public class HealingCrystal extends AbstractGameObject {
         super(screen);
         this.width = 16;
         this.height = 16;
-        texture = new Texture("textures/game/healing_crystal.png");
+        texture = screen.game.assets.get("textures/game/healing_crystal.png");
     }
 
     @Override
@@ -34,9 +34,8 @@ public class HealingCrystal extends AbstractGameObject {
     @Override
     public void collide(AbstractGameObject other) {
         if (other instanceof Player && ((Player) other).health < ((Player) other).maxHealth) {
-            ((Player) other).health = Math.min(((Player) other).maxHealth, ((Player) other).health + 5);
+            ((Player) other).heal(5);
             this.shouldRemove = true;
-            AudioManager.HEAL.play();
         }
     }
 }

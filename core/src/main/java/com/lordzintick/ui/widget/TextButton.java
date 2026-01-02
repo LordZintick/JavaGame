@@ -25,9 +25,9 @@ public class TextButton extends Widget {
      * Initialize the textures needed for rendering
      */
     private void initTextures() {
-        texture = new NinePatch(new Texture(Gdx.files.internal("textures/ui/button.png")), 2, 2, 2, 2);
-        textureHover = new NinePatch(new Texture(Gdx.files.internal("textures/ui/button_pressed.png")), 2, 2, 2, 2);
-        debugTexture = new Texture(Gdx.files.internal("textures/debug.png"));
+        texture = new NinePatch(screen.game.assets.get("textures/ui/button.png", Texture.class), 2, 2, 2, 2);
+        textureHover = new NinePatch(screen.game.assets.get("textures/ui/button_pressed.png", Texture.class), 2, 2, 2, 2);
+        debugTexture = screen.game.assets.get("textures/debug.png");
     }
 
     /**

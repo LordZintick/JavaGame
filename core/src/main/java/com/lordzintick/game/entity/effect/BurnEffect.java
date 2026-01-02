@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector4;
 import com.lordzintick.MainGame;
 import com.lordzintick.game.entity.Entity;
+import com.lordzintick.game.entity.player.Player;
 
 public class BurnEffect extends Effect {
     private float fireTicks = 0.5f;
@@ -22,7 +23,7 @@ public class BurnEffect extends Effect {
     public void tick(Entity entity, float deltaTime) {
         fireTicks -= deltaTime;
         if (fireTicks <= 0) {
-            fireTicks = 0.5f;
+            fireTicks = entity instanceof Player ? 2f : 0.5f;
             entity.damage(level);
         }
 

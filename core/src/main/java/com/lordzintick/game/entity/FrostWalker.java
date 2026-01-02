@@ -15,16 +15,16 @@ public class FrostWalker extends HostileEntity {
      * @param screen  The {@link AbstractGameScreen} containing this entity
      */
     public FrostWalker(AbstractGameScreen screen, Player player) {
-        super(screen, new Texture("textures/game/mobs/frost_walker.png"), 4, 8, player);
+        super(screen, screen.game.assets.get("textures/game/mobs/frost_walker.png"), 4, 8, player);
         scale = 8f;
     }
 
     @Override
     public void collide(AbstractGameObject other) {
-        super.collide(other);
         if (other instanceof Player && ((Player) other).iframes <= 0) {
             ((Player) other).applyEffect(new SlowEffect(screen.game, 10, 1));
         }
+        super.collide(other);
     }
 
     @Override
@@ -44,17 +44,17 @@ public class FrostWalker extends HostileEntity {
 
     @Override
     protected float getMoveSpeed() {
-        return 200f;
+        return 170f;
     }
 
     @Override
     public Sound getHurtSound() {
-        return AudioManager.HIT;
+        return screen.game.audio.HIT;
     }
 
     @Override
     public Sound getDeathSound() {
-        return AudioManager.KILL;
+        return screen.game.audio.KILL;
     }
 
     @Override
@@ -64,6 +64,6 @@ public class FrostWalker extends HostileEntity {
 
     @Override
     public int getXP() {
-        return 2;
+        return 4;
     }
 }

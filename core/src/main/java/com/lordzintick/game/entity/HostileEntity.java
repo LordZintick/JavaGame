@@ -1,10 +1,12 @@
 package com.lordzintick.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
 import com.lordzintick.game.AbstractGameObject;
+import com.lordzintick.game.entity.effect.Effect;
 import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.util.Direction;
@@ -14,7 +16,6 @@ import java.util.ArrayList;
 public abstract class HostileEntity extends Entity {
     protected Vector2 moveVector = Vector2.Zero;
     public final Player player;
-    private final ArrayList<Texture> usedTextures = new ArrayList<>();
     public float damage = 1;
 
     /**
@@ -29,6 +30,15 @@ public abstract class HostileEntity extends Entity {
         super(screen, texture, width, height);
         this.player = player;
         this.speed = getMoveSpeed();
+    }
+
+    @Override
+    public void render(Batch batch, float deltaTime) {
+        super.render(batch, deltaTime);
+        for (int i = 0; i < effects.size(); i++) {
+            Effect effect = effects.get(i);
+            batch.draw(effect.sprite, x + (float) width / 2 * scale - 8, y + height * scale + 10 + i * 26, 16, 16);
+        }
     }
 
     @Override
@@ -85,17 +95,4 @@ public abstract class HostileEntity extends Entity {
     }
     public abstract int getScore();
     public abstract int getXP();
-
-    protected Texture createTexture(String filename) {
-        Texture tex = new Texture(filename);
-        usedTextures.add(tex);
-        return tex;
-    }
-
-    @Override
-    public void dispose() {
-        for (Texture texture : usedTextures) {
-            texture.dispose();
-        }
-    }
 }

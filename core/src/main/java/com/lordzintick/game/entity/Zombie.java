@@ -13,7 +13,7 @@ public class Zombie extends HostileEntity {
      * @param screen  The {@link AbstractGameScreen} containing this entity
      */
     public Zombie(AbstractGameScreen screen, Player player) {
-        super(screen, new Texture("textures/game/mobs/zombie.png"), 4, 8, player);
+        super(screen, screen.game.assets.get("textures/game/mobs/zombie.png"), 4, 8, player);
         scale = 8f;
     }
 
@@ -39,12 +39,12 @@ public class Zombie extends HostileEntity {
 
     @Override
     public Sound getHurtSound() {
-        return AudioManager.HIT;
+        return screen.game.audio.HIT;
     }
 
     @Override
     public Sound getDeathSound() {
-        return AudioManager.KILL;
+        return screen.game.audio.KILL;
     }
 
     @Override
@@ -54,6 +54,6 @@ public class Zombie extends HostileEntity {
 
     @Override
     public int getXP() {
-        return 1;
+        return 2;
     }
 }

@@ -3,6 +3,12 @@ package com.lordzintick;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.MusicLoader;
+import com.badlogic.gdx.assets.loaders.SoundLoader;
+import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,7 +20,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.lordzintick.audio.AudioManager;
-import com.lordzintick.audio.Sound;
 import com.lordzintick.control.Input;
 import com.lordzintick.core.Logger;
 import com.lordzintick.game.accessory.AccessoryTypes;
@@ -24,8 +29,11 @@ import com.lordzintick.game.skill.SkillTypes;
 import com.lordzintick.ui.screen.SelectClassScreen;
 import com.lordzintick.ui.screen.TitleScreen;
 import com.lordzintick.util.BaseScreen;
+import com.lordzintick.util.UIUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -74,13 +82,16 @@ public class MainGame extends ApplicationAdapter {
     public AccessoryTypes accessoryTypes;
     public TextureRegion[][] effectAtlas;
     public TextureRegion[][] particlesAtlas;
+    public final HashMap<PlayerClass, TextureRegion[][]> playerTextures = new HashMap<>();
     public Texture debugTexture;
     public Texture slotTexture;
     public Texture cooldownTexture;
     public PlayerClass selectedPlayerClass = PlayerClass.MAGE;
-    public AssetManager assets; // TODO: Implement asynchronous asset loading and better texture disposal
+    public AssetManager assets;
     public FileHandle highscoreFile;
     public int highscore = 0;
+    public boolean loadedAssets = false;
+    public AudioManager audio;
 
     /**
      * The current {@link BaseScreen} of the game
@@ -93,12 +104,13 @@ public class MainGame extends ApplicationAdapter {
 
     @Override
     public void create() {
-        // Initialize instances
-        effectAtlas = TextureRegion.split(new Texture("textures/ui/effects.png"), 8, 8);
-        particlesAtlas = TextureRegion.split(new Texture("textures/game/particles.png"), 2, 2);
-        debugTexture = new Texture("textures/debug.png");
-        slotTexture = new Texture("textures/ui/slot.png");
-        cooldownTexture = new Texture("textures/ui/cooldown.png");
+        // Initialize the asset manager
+        assets = new AssetManager(new InternalFileHandleResolver());
+        assets.setLoader(Texture.class, "png", new TextureLoader(new InternalFileHandleResolver()));
+        assets.setLoader(com.badlogic.gdx.audio.Sound.class, "wav", new SoundLoader(new InternalFileHandleResolver()));
+        assets.setLoader(Music.class, "mp3", new MusicLoader(new InternalFileHandleResolver()));
+
+        // Initialize highscore file
         highscoreFile = Gdx.files.local("highscore.txt");
         if (!highscoreFile.exists()) {
             highscoreFile.parent().mkdirs();
@@ -110,6 +122,7 @@ public class MainGame extends ApplicationAdapter {
             highscoreFile.writeString("0", false);
         }
 
+        // Initialize non-asset related instances
         random = new Random(System.currentTimeMillis());
         gameBatch = new SpriteBatch();
         uiBatch = new SpriteBatch();
@@ -117,8 +130,6 @@ public class MainGame extends ApplicationAdapter {
         camera = new OrthographicCamera(2, 2);
         camera.setToOrtho(false, 2, 2);
         json = new Json();
-        skillTypes = new SkillTypes(this);
-        accessoryTypes = new AccessoryTypes(this);
         input = new Input(this);
         Gdx.input.setInputProcessor(input);
 
@@ -134,42 +145,76 @@ public class MainGame extends ApplicationAdapter {
         megaFont = fontGenerator.generateFont(param);
         fontGenerator.dispose();
 
-        // Initialize the ScreenHolder after the other initializations
-        // This is VERY IMPORTANT, as this initializes the UI and requires the font to be loaded
-        screenHolder = new ScreenHolder();
-
-        // Set the initial screen
-        screen = screenHolder.TITLE;
-        screen.startMusic();
-
         String highscoreData = highscoreFile.readString().replace("\"", "").trim();
         highscore = Integer.parseInt(highscoreData);
+
+        // Load textures and audio
+        FileHandle audioFolder = Gdx.files.internal("audio");
+        FileHandle texturesFolder = Gdx.files.internal("textures");
+        loadAllAssets(audioFolder);
+        loadAllAssets(texturesFolder);
     }
 
     @Override
     public void render() {
-        // Clear the screen to the background color and update screen objects + the camera
-        ScreenUtils.clear(screen.getBackgroundColor());
-        if (!screen.isPaused()) {
-            screen.update(Gdx.graphics.getDeltaTime());
+        if (assets.update()) {
+            if (!loadedAssets) {
+                // Initialize asset-related instances
+                loadedAssets = true;
+                audio = new AudioManager(this);
+                effectAtlas = TextureRegion.split(assets.get("textures/ui/effects.png"), 8, 8);
+                particlesAtlas = TextureRegion.split(assets.get("textures/game/particles.png"), 2, 2);
+                debugTexture = assets.get("textures/debug.png");
+                slotTexture = assets.get("textures/ui/slot.png");
+                cooldownTexture = assets.get("textures/ui/cooldown.png");
+
+                for (PlayerClass clazz : PlayerClass.values()) {
+                    playerTextures.put(clazz, TextureRegion.split(assets.get("textures/game/player/player_" + clazz.name().toLowerCase(Locale.ROOT) + ".png"), 6, 12));
+                }
+
+                skillTypes = new SkillTypes(this);
+                accessoryTypes = new AccessoryTypes(this);
+
+                // Initialize the ScreenHolder after the other initializations
+                // This is VERY IMPORTANT, as this initializes the UI and requires the font to be loaded
+                screenHolder = new ScreenHolder();
+
+                // Set the initial screen
+                screen = screenHolder.TITLE;
+                screen.startMusic();
+            }
+
+            // Clear the screen to the background color and update screen objects + the camera
+            ScreenUtils.clear(screen.getBackgroundColor());
+            if (!screen.isPaused()) {
+                screen.update(Gdx.graphics.getDeltaTime());
+            }
+            camera.update();
+
+            // Update the gameBatch transform matrix
+            gameBatch.setTransformMatrix(camera.combined);
+
+            // Render the current screen
+            gameBatch.begin();
+            screen.renderGame(Gdx.graphics.getDeltaTime());
+            gameBatch.end();
+
+            uiBatch.begin();
+            screen.renderUI(Gdx.graphics.getDeltaTime());
+            font.draw(uiBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 40, Gdx.graphics.getHeight() - font.getLineHeight() * 2);
+            font.setColor(Color.GOLD);
+            font.draw(uiBatch, "Highscore: " + highscore, 40, Gdx.graphics.getHeight() - font.getLineHeight() * 5);
+            font.setColor(Color.WHITE);
+            uiBatch.end();
+        } else {
+            ScreenUtils.clear(Color.BLACK);
+
+            float progress = assets.getProgress();
+            String text = (int) (progress * 100) + "%";
+            uiBatch.begin();
+            megaFont.draw(uiBatch, text, (float) Gdx.graphics.getWidth() / 2 - UIUtil.getFontStringWidth(text, megaFont) / 2, (float) Gdx.graphics.getHeight() / 2 - megaFont.getLineHeight() / 2);
+            uiBatch.end();
         }
-        camera.update();
-
-        // Update the gameBatch transform matrix
-        gameBatch.setTransformMatrix(camera.combined);
-
-        // Render the current screen
-        gameBatch.begin();
-        screen.renderGame(Gdx.graphics.getDeltaTime());
-        gameBatch.end();
-
-        uiBatch.begin();
-        screen.renderUI(Gdx.graphics.getDeltaTime());
-        font.draw(uiBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 40, Gdx.graphics.getHeight() - font.getLineHeight() * 2);
-        font.setColor(Color.GOLD);
-        font.draw(uiBatch, "Highscore: " + highscore, 40, Gdx.graphics.getHeight() - font.getLineHeight() * 5);
-        font.setColor(Color.WHITE);
-        uiBatch.end();
     }
 
     /**
@@ -202,12 +247,31 @@ public class MainGame extends ApplicationAdapter {
         particlesAtlas[0][0].getTexture().dispose();
         debugTexture.dispose();
 
-        // Iterate through all sounds and dispose of them
-        for (Sound sound : AudioManager.SOUNDS.values()) {
-            sound.dispose();
-        }
+        assets.dispose();
 
         highscoreFile.writeString(String.valueOf(highscore), false);
+    }
+
+    private void loadAllAssets(FileHandle folder) {
+        if (folder.isDirectory()) {
+            for (FileHandle child : folder.list()) {
+                if (child.isDirectory()) {
+                    loadAllAssets(child);
+                } else {
+                    String name = child.name().toLowerCase(Locale.ROOT);
+                    if (name.endsWith("png")) {
+                        LOGGER.log("Loading image file " + child.path());
+                        assets.load(child.path(), Texture.class);
+                    } else if (name.endsWith("wav")) {
+                        LOGGER.log("Loading sound file " + child.path());
+                        assets.load(child.path(), Sound.class);
+                    } else if (name.endsWith("mp3")) {
+                        LOGGER.log("Loading music file " + child.path());
+                        assets.load(child.path(), Music.class);
+                    }
+                }
+            }
+        }
     }
 
     /**

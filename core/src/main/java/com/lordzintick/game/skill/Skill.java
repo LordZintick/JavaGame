@@ -20,8 +20,11 @@ public class Skill {
 
     public void displayTooltip(Batch batch, Player player, MainGame game, float x, float y) {
         String title = type.displayName;
+        if (type.manaCost > 0) {
+            title = title + " (" + type.manaCost + " mana)";
+        }
         if (isOnCooldown()) {
-            title = type.displayName + "(" + Math.floor(remainingCooldown * 10) / 10 + "s)";
+            title = title + " (" + Math.floor(remainingCooldown * 10) / 10 + "s)";
         }
 
         ArrayList<Text> description = new ArrayList<>(type.description);
@@ -30,11 +33,11 @@ public class Skill {
         float coolMult = player.getSkillCooldownMultiplier(type);
 
         if (dmgMult > 1) {
-            description.add(new Text("+" + (dmgMult - 1) * 100 + "% damage"));
+            description.add(new Text("+" + (int) ((dmgMult - 1) * 100) + "% damage"));
         }
 
         if (coolMult < 1) {
-            description.add(new Text("+" + (1 - coolMult) * 100 + "% attack speed"));
+            description.add(new Text("+" + (int) ((1 - coolMult) * 100) + "% attack speed"));
         }
 
         UIUtil.displayTooltip(batch, game, x, y, UIUtil.getFontStringWidth(type.rarity.name(), game.font), type.rarity.color, title, type.rarity.name(), description);

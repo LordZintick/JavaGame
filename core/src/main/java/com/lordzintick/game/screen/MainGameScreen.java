@@ -85,7 +85,7 @@ public class MainGameScreen extends AbstractGameScreen {
         player = new Player(this, game.selectedPlayerClass);
         queueAddObject(player);
 
-        map = new Texture("textures/game/map.png");
+        map = game.assets.get("textures/game/map.png");
     }
 
     @Override
@@ -162,7 +162,7 @@ public class MainGameScreen extends AbstractGameScreen {
             mob.x = x;
             mob.y = y;
             mob.health *= difficultyMultiplier;
-            mob.damage *= Math.max(1, difficultyMultiplier - 0.5f);
+            mob.damage *= Math.max(1, (difficultyMultiplier - 1f) / 2);
             queueAddObject(mob);
         }
 
@@ -265,6 +265,6 @@ public class MainGameScreen extends AbstractGameScreen {
 
     @Override
     public Sound getBackgroundMusic() {
-        return AudioManager.GAME_MUSIC;
+        return game.audio.GAME_MUSIC;
     }
 }

@@ -10,7 +10,7 @@ public final class EntityHelper {
     public static final HostileEntityFactory<Zombie> ZOMBIE = register("zombie", 100, Zombie::new);
     public static final HostileEntityFactory<EvilWizard> EVIL_WIZARD = register("evil_wizard", 10, EvilWizard::new);
     public static final HostileEntityFactory<Skeleton> SKELETON = register("skeleton", 50, Skeleton::new);
-    public static final HostileEntityFactory<IrradiatedZombie> IRRADIATED_ZOMBIE = register("irradiated_zombie", 1, IrradiatedZombie::new);
+    public static final HostileEntityFactory<IrradiatedZombie> IRRADIATED_ZOMBIE = register("irradiated_zombie", 5, IrradiatedZombie::new);
     public static final HostileEntityFactory<FrostWalker> FROST_WALKER = register("frost_walker", 35, FrostWalker::new);
 
     public static int getTotalWeight() {

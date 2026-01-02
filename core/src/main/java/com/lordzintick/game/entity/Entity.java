@@ -65,7 +65,6 @@ public abstract class Entity extends AbstractGameObject {
     public abstract int getMaxHealth();
     public void onDeath() {
         shouldRemove = true;
-        textures[0][0].getTexture().dispose();
     }
 
     public void applyEffect(Effect effect) {
@@ -80,8 +79,13 @@ public abstract class Entity extends AbstractGameObject {
                 ((HostileEntity) this).getHurtSound().play();
             }
         } else if (this instanceof Player) {
-            AudioManager.PLAYER_HIT.play();
+            screen.game.audio.PLAYER_HIT.play();
         }
+    }
+
+    public void heal(float amount) {
+        this.health = Math.min(getMaxHealth(), health + amount);
+        screen.game.audio.HEAL.play();
     }
 
     @Override

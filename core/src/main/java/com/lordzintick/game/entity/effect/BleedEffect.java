@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector4;
 import com.lordzintick.MainGame;
 import com.lordzintick.game.entity.Entity;
+import com.lordzintick.game.entity.player.Player;
 
 public class BleedEffect extends Effect {
     private float bleedTicks = 1f;
@@ -22,7 +23,7 @@ public class BleedEffect extends Effect {
     public void tick(Entity entity, float deltaTime) {
         bleedTicks -= deltaTime;
         if (bleedTicks <= 0) {
-            bleedTicks = 1f;
+            bleedTicks = entity instanceof Player ? 3f : 1f;
             entity.damage(level * 2);
         }
 

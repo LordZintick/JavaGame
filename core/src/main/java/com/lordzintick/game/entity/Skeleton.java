@@ -13,7 +13,7 @@ public class Skeleton extends HostileEntity {
      * @param screen  The {@link AbstractGameScreen} containing this entity
      */
     public Skeleton(AbstractGameScreen screen, Player player) {
-        super(screen, new Texture("textures/game/mobs/skeleton.png"), 4, 8, player);
+        super(screen, screen.game.assets.get("textures/game/mobs/skeleton.png"), 4, 8, player);
         scale = 8f;
     }
 
@@ -34,17 +34,17 @@ public class Skeleton extends HostileEntity {
 
     @Override
     protected float getMoveSpeed() {
-        return 170f;
+        return 200f;
     }
 
     @Override
     public Sound getHurtSound() {
-        return AudioManager.HIT;
+        return screen.game.audio.HIT;
     }
 
     @Override
     public Sound getDeathSound() {
-        return AudioManager.KILL;
+        return screen.game.audio.KILL;
     }
 
     @Override
@@ -54,6 +54,6 @@ public class Skeleton extends HostileEntity {
 
     @Override
     public int getXP() {
-        return 1;
+        return 4;
     }
 }

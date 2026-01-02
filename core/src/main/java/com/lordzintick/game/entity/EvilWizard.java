@@ -14,18 +14,58 @@ import java.util.Optional;
 
 public class EvilWizard extends HostileEntity {
     private float cooldown = 3f;
-    private final Texture projTexture;
+    private final String projTexture;
+    private SkillConfig projConfig;
     private final ArrayList<Projectile> ownedProjectiles = new ArrayList<>();
     /**
      * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
      *
      * @param screen  The {@link AbstractGameScreen} containing this entity
-     * @param player
      */
     public EvilWizard(AbstractGameScreen screen, Player player) {
-        super(screen, new Texture("textures/game/mobs/evil_wizard.png"), 6, 12, player);
+        super(screen, screen.game.assets.get("textures/game/mobs/evil_wizard.png"), 6, 12, player);
         this.scale = 8f;
-        this.projTexture = createTexture("textures/game/skills/plasma_bolt.png");
+        String textureName = "plasma_bolt";
+        int val = screen.game.random.nextInt(7);
+
+        switch (val) {
+            case 0: {
+                textureName = "fireball";
+                projConfig = SkillConfig.FIREBALL;
+                break;
+            }
+            case 1: {
+                textureName = "iceball";
+                projConfig = SkillConfig.ICEBALL;
+                break;
+            }
+            case 2: {
+                textureName = "acidball";
+                projConfig = SkillConfig.ACIDBALL;
+                break;
+            }
+            case 3: {
+                textureName = "waterball";
+                projConfig = SkillConfig.WATERBALL;
+                break;
+            }
+            case 4: {
+                textureName = "lightningball";
+                projConfig = SkillConfig.LIGHTNINGBALL;
+                break;
+            }
+            case 5: {
+                textureName = "flowerball";
+                projConfig = SkillConfig.FLOWERBALL;
+                break;
+            }
+            case 6: {
+                projConfig = SkillConfig.PLASMA_BOLT;
+                break;
+            }
+        }
+
+        this.projTexture = "textures/game/skills/" + textureName + ".png";
     }
 
     @Override
@@ -43,7 +83,7 @@ public class EvilWizard extends HostileEntity {
 
         if (cooldown <= 0) {
             cooldown = 3f;
-            ownedProjectiles.add(SkillHelper.shootProjectile(projTexture, this, Optional.empty(), SkillConfig.PLASMA_BOLT));
+            ownedProjectiles.add(SkillHelper.shootProjectile(projTexture, this, Optional.empty(), projConfig));
         }
     }
 
@@ -54,12 +94,12 @@ public class EvilWizard extends HostileEntity {
 
     @Override
     public Sound getHurtSound() {
-        return AudioManager.HIT;
+        return screen.game.audio.HIT;
     }
 
     @Override
     public Sound getDeathSound() {
-        return AudioManager.KILL;
+        return screen.game.audio.KILL;
     }
 
     @Override
@@ -69,7 +109,7 @@ public class EvilWizard extends HostileEntity {
 
     @Override
     public int getXP() {
-        return 2;
+        return 3;
     }
 
     @Override

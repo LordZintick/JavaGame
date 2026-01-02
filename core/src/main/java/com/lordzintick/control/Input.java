@@ -54,6 +54,7 @@ public final class Input implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         mouseButtonsPressed[button] = true;
+        if (game.screen == null) return false;
 
         // Iterate through all the screen's widgets
         for (Widget widget : game.screen.widgets) {
@@ -68,6 +69,7 @@ public final class Input implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         mouseButtonsPressed[button] = false;
+        if (game.screen == null) return false;
 
         // Iterate through all the screen's widgets
         for (Widget widget : game.screen.widgets) {
@@ -91,6 +93,8 @@ public final class Input implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        if (game.screen == null) return false;
+
         // Iterate through all the screen's widgets
         for (Widget widget : game.screen.widgets) {
             // Check if the mouse position is in the widgets' area, and call the according method

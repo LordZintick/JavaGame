@@ -35,7 +35,7 @@ public class Player extends Entity {
     public int skillPoints = 0;
     public PlayerClass playerClass;
     private boolean updatedClass = false;
-    public int maxHealth = 20;
+    public int maxHealth = 50;
     public final ArrayList<Accessory> accessories = new ArrayList<>();
     private final HashMap<SkillType, Float> skillCooldownMultipliers = new HashMap<>();
     private final HashMap<SkillType, Float> skillDamageMultipliers = new HashMap<>();
@@ -49,7 +49,7 @@ public class Player extends Entity {
      * @param screen The {@link AbstractGameScreen} containing this player
      */
     public Player(AbstractGameScreen screen, PlayerClass playerClass) {
-        super(screen, new Texture(Gdx.files.internal("textures/game/player/player_" + playerClass.name().toLowerCase(Locale.ROOT) + ".png")), 6, 12);
+        super(screen, screen.game.playerTextures.get(playerClass)[0][0].getTexture(), 6, 12);
         this.playerClass = playerClass;
         levelupParticles = new TextureRegion[] {screen.game.particlesAtlas[1][0], screen.game.particlesAtlas[1][1]};
         this.speed = 256;
@@ -62,9 +62,8 @@ public class Player extends Entity {
     @Override
     public void update(float deltaTime) {
         if (playerClass != screen.game.selectedPlayerClass || !updatedClass) {
-            textures[0][0].getTexture().dispose();
             playerClass = screen.game.selectedPlayerClass;
-            textures = TextureRegion.split(new Texture(Gdx.files.internal("textures/game/player/player_" + playerClass.name().toLowerCase(Locale.ROOT) + ".png")), 6, 12);
+            textures = screen.game.playerTextures.get(playerClass);
             if (!updatedClass) {
                 updatedClass = true;
                 playerClass.statModifier.accept(this);
@@ -75,6 +74,7 @@ public class Player extends Entity {
         }
 
         super.update(deltaTime);
+        this.collisionRect.set(x + (float) width / 4 * scale, y + (float) height / 4 * scale, (float) width / 2 * scale, (float) height / 2 * scale);
 
         manaTicks += deltaTime;
         if (manaTicks >= 0.1f * manaRegenMultiplier && mana < maxMana) {
@@ -148,8 +148,13 @@ public class Player extends Entity {
         super.render(batch, deltaTime);
         for (int i = 0; i < effects.size(); i++) {
             Effect effect = effects.get(i);
-            batch.draw(effect.sprite, x + (float) width / 2 - 4, y + height + 10 + i * 10, 8, 8);
+            batch.draw(effect.sprite, x + (float) width / 2 * scale - 16, y + height * scale + 10 + i * 42, 32, 32);
         }
+    }
+
+    @Override
+    public void damage(float amount) {
+        tryDamage(amount);
     }
 
     @Override
@@ -180,10 +185,10 @@ public class Player extends Entity {
     public void tryDamage(float amount) {
         float val = screen.game.random.nextFloat();
         if (val <= blockPower && blockPower > 0) {
-            AudioManager.BLOCK.play();
+            screen.game.audio.BLOCK.play();
         } else {
             health -= amount;
-            AudioManager.PLAYER_HIT.play();
+            screen.game.audio.PLAYER_HIT.play();
         }
     }
 
@@ -225,7 +230,7 @@ public class Player extends Entity {
 
     public void levelUp() {
         level++;
-        AudioManager.LEVELUP.play();
+        screen.game.audio.LEVELUP.play();
         levelupTicks += 2;
         screen.pause();
         skillPoints++;

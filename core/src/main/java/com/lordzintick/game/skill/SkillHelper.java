@@ -15,7 +15,7 @@ import com.lordzintick.game.proj.StationaryProjectile;
 import java.util.Optional;
 
 public final class SkillHelper {
-    public static MeleeAttack triggerMeleeAttack(Texture sheet, Entity entity, Optional<String> skillID, SkillConfig config) {
+    public static MeleeAttack triggerMeleeAttack(String sheetname, Entity entity, Optional<String> skillID, SkillConfig config) {
         OrthographicCamera cam = entity.screen.game.camera;
         cam.update();
         Vector2 entityPos = new Vector2(entity.x + (float) entity.width / 4 * entity.scale, entity.y + (float) entity.height / 4 * entity.scale);
@@ -31,8 +31,8 @@ public final class SkillHelper {
 
         MeleeAttack attack = new MeleeAttack(
             entity.screen, entity, direction.angleDeg() - 45,
-            config.projWidth, config.projHeight, sheet, (int) (config.defaultDamage * (entity instanceof Player && skillID.isPresent() ? ((Player) entity).getSkillCooldownMultiplier(entity.screen.game.skillTypes.SKILL_TYPES.get(skillID.get())) : 1)),
-            config.frameTime, config.pierce, config.lifeTime, config.tick, config.hit, entity instanceof Player
+            config.projWidth, config.projHeight, entity.screen.game.assets.get(sheetname), (int) (config.defaultDamage * (entity instanceof Player && skillID.isPresent() ? ((Player) entity).getSkillCooldownMultiplier(entity.screen.game.skillTypes.SKILL_TYPES.get(skillID.get())) : 1)),
+            config.frameTime, config.lifeTime, config.aimAtCursor, config.tick, config.hit, entity instanceof Player
         );
         attack.x = entityPos.x;
         attack.y = entityPos.y;
@@ -41,24 +41,24 @@ public final class SkillHelper {
         return attack;
     }
 
-    public static StationaryProjectile placeStationaryProjectile(Texture sheet, Entity entity, Optional<String> skillID, SkillConfig config) {
+    public static StationaryProjectile placeStationaryProjectile(String sheetname, Entity entity, Optional<String> skillID, SkillConfig config) {
         OrthographicCamera cam = entity.screen.game.camera;
         cam.update();
         Vector2 entityPos = new Vector2(entity.x + (float) entity.width / 4 * entity.scale, entity.y + (float) entity.height / 4 * entity.scale);
 
         StationaryProjectile projectile = new StationaryProjectile(
             entity.screen, entity,
-            config.projWidth, config.projHeight, sheet, (int) (config.defaultDamage * (entity instanceof Player && skillID.isPresent() ? ((Player) entity).getSkillDamageMultiplier(entity.screen.game.skillTypes.SKILL_TYPES.get(skillID.get())) : 1)),
-            config.frameTime, config.pierce, config.lifeTime, config.tick, config.hit, entity instanceof Player
+            config.projWidth, config.projHeight, entity.screen.game.assets.get(sheetname), (int) (config.defaultDamage * (entity instanceof Player && skillID.isPresent() ? ((Player) entity).getSkillDamageMultiplier(entity.screen.game.skillTypes.SKILL_TYPES.get(skillID.get())) : 1)),
+            config.frameTime, config.lifeTime, config.aimAtCursor, config.tick, config.hit, entity instanceof Player
         );
-        projectile.x = entityPos.x;
-        projectile.y = entityPos.y;
+        projectile.x = entityPos.x - (float) projectile.width * 4;
+        projectile.y = entityPos.y - projectile.height * 4;
 
         entity.screen.queueAddObject(projectile);
         return projectile;
     }
 
-    public static Projectile shootProjectile(Texture sheet, Entity entity, Optional<String> skillID, SkillConfig config) {
+    public static Projectile shootProjectile(String sheetname, Entity entity, Optional<String> skillID, SkillConfig config) {
         OrthographicCamera cam = entity.screen.game.camera;
         cam.update();
         Vector2 entityPos = new Vector2(entity.x + (float) entity.width / 4 * entity.scale, entity.y + (float) entity.height / 4 * entity.scale);
@@ -74,9 +74,9 @@ public final class SkillHelper {
 
         Projectile projectile = new Projectile(
             entity.screen, entity, direction.x, direction.y,
-            config.projWidth, config.projHeight, sheet, (int) (config.defaultDamage * (entity instanceof Player && skillID.isPresent() ? ((Player) entity).getSkillDamageMultiplier(entity.screen.game.skillTypes.SKILL_TYPES.get(skillID.get())) : 1)),
+            config.projWidth, config.projHeight, entity.screen.game.assets.get(sheetname), (int) (config.defaultDamage * (entity instanceof Player && skillID.isPresent() ? ((Player) entity).getSkillDamageMultiplier(entity.screen.game.skillTypes.SKILL_TYPES.get(skillID.get())) : 1)),
             config.frameTime, config.speed / (entity instanceof Player ? 1 : 2.5f),
-            (entity instanceof Player ? config.pierce : 0), config.tick, config.hit, entity instanceof Player
+            (entity instanceof Player ? config.pierce : 0), config.aimAtCursor, config.tick, config.hit, entity instanceof Player
         );
         projectile.x = entityPos.x;
         projectile.y = entityPos.y;
