@@ -16,6 +16,7 @@ public class Barbarian extends HostileEntity {
      */
     public Barbarian(AbstractGameScreen screen, Player player) {
         super(screen, screen.game.assets.get("textures/game/mobs/barbarian.png"), 6, 12, player);
+        scale = 8f;
         rage = new RageEffect(screen.game, 10, 1);
     }
 
