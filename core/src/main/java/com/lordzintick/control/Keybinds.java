@@ -17,7 +17,6 @@ public final class Keybinds {
      * A {@link HashMap} containing all the registered {@link Keybind}s
      */
     public final HashMap<String, Keybind> KEYBINDS = new HashMap<>();
-    private final MainGame game;
 
     public final Keybind UP;
     public final Keybind DOWN;
@@ -38,8 +37,6 @@ public final class Keybinds {
     public final Keybind DASH;
 
     public Keybinds(MainGame game) {
-        this.game = game;
-
         Runnable pauseAction = () -> {
             if (game.screen.isPaused()) {
                 game.screen.resume();

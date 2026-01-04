@@ -20,8 +20,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.lordzintick.achievement.Achievement;
+import com.lordzintick.achievement.Achievements;
 import com.lordzintick.audio.AudioManager;
 import com.lordzintick.control.GamepadInput;
 import com.lordzintick.control.Input;
@@ -31,6 +35,7 @@ import com.lordzintick.game.accessory.AccessoryTypes;
 import com.lordzintick.game.entity.player.PlayerClass;
 import com.lordzintick.game.screen.MainGameScreen;
 import com.lordzintick.game.skill.SkillTypes;
+import com.lordzintick.ui.screen.AchievementScreen;
 import com.lordzintick.ui.screen.RunConfigScreen;
 import com.lordzintick.ui.screen.TitleScreen;
 import com.lordzintick.util.BaseScreen;
@@ -102,6 +107,9 @@ public class MainGame extends ApplicationAdapter {
     public Keybinds keybinds;
     public GamepadInput gamepadInput;
     public int gamepadCursorX, gamepadCursorY;
+    public Achievements achievements;
+    public float achievementTicks = 0;
+    public Achievement displayingAchievement = null;
 
     /**
      * The current {@link BaseScreen} of the game
@@ -148,22 +156,6 @@ public class MainGame extends ApplicationAdapter {
         gamepadInput = new GamepadInput(this);
         Controllers.addListener(gamepadInput);
 
-        // Initialize data file
-        dataFile = Gdx.files.local("gameData.json");
-        if (!dataFile.exists()) {
-            dataFile.parent().mkdirs();
-            try {
-                if (dataFile.file().createNewFile()) {
-                    LOGGER.log("Successfully created data file at path " + dataFile.file().getAbsolutePath());
-                }
-            } catch (IOException e) {
-                LOGGER.log("IOException: " + e.getMessage());
-            }
-            gameData = new GameData();
-            json.toJson(gameData, dataFile);
-            LOGGER.log("Finished creating data file");
-        }
-
         // Generate fonts
         LOGGER.log("Generating fonts...");
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.classpath("Monocraft.ttf"));
@@ -178,8 +170,6 @@ public class MainGame extends ApplicationAdapter {
         param.borderColor = Color.DARK_GRAY;
         megaFont = fontGenerator.generateFont(param);
         fontGenerator.dispose();
-
-        gameData = json.fromJson(GameData.class, dataFile);
     }
 
     @Override
@@ -189,6 +179,26 @@ public class MainGame extends ApplicationAdapter {
                 // Initialize asset-related instances
                 loadedAssets = true;
                 audio = new AudioManager(this);
+                achievements = new Achievements(this);
+
+                // Initialize data file
+                gameData = new GameData(this);
+                dataFile = Gdx.files.local("gameData.json");
+                if (!dataFile.exists()) {
+                    dataFile.parent().mkdirs();
+                    try {
+                        if (dataFile.file().createNewFile()) {
+                            LOGGER.log("Successfully created data file at path " + dataFile.file().getAbsolutePath());
+                        }
+                    } catch (IOException e) {
+                        LOGGER.log("IOException: " + e.getMessage());
+                    }
+                    json.toJson(gameData, dataFile);
+                    LOGGER.log("Finished creating data file");
+                }
+                JsonReader reader = json.getReader();
+                gameData.read(json, reader.parse(dataFile));
+
                 effectAtlas = TextureRegion.split(assets.get("textures/ui/effects.png"), 8, 8);
                 particlesAtlas = TextureRegion.split(assets.get("textures/game/particles.png"), 2, 2);
                 debugTexture = assets.get("textures/debug.png");
@@ -233,6 +243,8 @@ public class MainGame extends ApplicationAdapter {
             screen.renderGame(Gdx.graphics.getDeltaTime());
             gameBatch.end();
 
+            achievements.checkAllUnachieved();
+
             uiBatch.begin();
             screen.renderUI(Gdx.graphics.getDeltaTime());
             outlinedFont.draw(uiBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 40, Gdx.graphics.getHeight() - font.getLineHeight() * 2);
@@ -243,6 +255,24 @@ public class MainGame extends ApplicationAdapter {
             if (screen.isPaused()) {
                 megaFont.draw(uiBatch, "PAUSED", (float) Gdx.graphics.getWidth() / 2 - UIUtil.getFontStringWidth("PAUSED", megaFont) / 2, (float) Gdx.graphics.getHeight() - font.getLineHeight());
             }
+
+            if (achievementTicks > 0) {
+                achievementTicks -= Gdx.graphics.getDeltaTime();
+                if (displayingAchievement != null) {
+                    uiBatch.draw(displayingAchievement.icon, Gdx.graphics.getWidth() - 74, Gdx.graphics.getHeight() - 74, 64, 64);
+                    String text = "Achievement get! " + displayingAchievement.displayName;
+                    float width = UIUtil.getFontStringWidth(text, outlinedFont);
+                    outlinedFont.draw(
+                        uiBatch,
+                        text,
+                        Gdx.graphics.getWidth() - 84 - width,
+                        Gdx.graphics.getHeight() - outlinedFont.getLineHeight() * 2f,
+                        width,
+                        Align.right, false
+                    );
+                }
+            }
+
             uiBatch.end();
         } else {
             ScreenUtils.clear(Color.BLACK);
@@ -320,11 +350,13 @@ public class MainGame extends ApplicationAdapter {
         public final TitleScreen TITLE;
         public final RunConfigScreen RUN_CONFIG;
         public final MainGameScreen MAIN_GAME;
+        public final AchievementScreen ACHIEVEMENTS;
 
         private ScreenHolder() {
             TITLE = new TitleScreen(MainGame.this);
             RUN_CONFIG = new RunConfigScreen(MainGame.this);
             MAIN_GAME = new MainGameScreen(MainGame.this);
+            ACHIEVEMENTS = new AchievementScreen(MainGame.this);
         }
     }
 }

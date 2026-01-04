@@ -16,6 +16,7 @@ public final class AudioManager {
 
         // Music
         register("title_music", new Sound(game, "audio/lines_of_code.mp3", true, 1f, true));
+        register("achievements_music", new Sound(game, "audio/lucidate.mp3", true, 1f, true));
         register("game_music_1", new Sound(game, "audio/the_great_strategy.mp3", false, 0.5f, true));
         register("game_music_2", new Sound(game, "audio/rush_point.mp3", false, 0.5f, true));
         register("game_music_3", new Sound(game, "audio/perilous_dungeon.mp3", false, 0.5f, true));
@@ -43,6 +44,7 @@ public final class AudioManager {
         register("place", new Sound(game, "audio/sfx/place.wav", false, 0.5f, false));
         register("confirm", new Sound(game, "audio/sfx/confirm.wav", false, 0.5f, false));
         register("back", new Sound(game, "audio/sfx/back.wav", false, 0.5f, false));
+        register("achievement", new Sound(game, "audio/sfx/achievement.wav", false, 1, false));
     }
 
     /**

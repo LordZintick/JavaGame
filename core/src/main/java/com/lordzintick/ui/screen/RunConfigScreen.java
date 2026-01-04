@@ -35,7 +35,7 @@ public class RunConfigScreen extends AbstractUIScreen {
 
         // Add start button
         widgets.add(new TextButton(this, new Text("Start").setAlign(Align.center), getMidX() - 74, 20, 128, 40, () -> {
-            if (game.gameData.unlockedClasses.get(game.selectedPlayerClass.name().toLowerCase(Locale.ROOT))) {
+            if (game.selectedPlayerClass.checkUnlocked(game)) {
                 LOGGER.log("Starting game...");
                 game.audio.get("confirm").play();
                 game.changeScreen(game.screenHolder.MAIN_GAME);
@@ -84,7 +84,7 @@ public class RunConfigScreen extends AbstractUIScreen {
         super.update(deltaTime);
 
         float width = 0;
-        if (game.gameData.unlockedClasses.get(game.selectedPlayerClass.name().toLowerCase(Locale.ROOT))) {
+        if (game.selectedPlayerClass.checkUnlocked(game)) {
             classnameLabel.text = new Text(game.selectedPlayerClass.name());
             StringBuilder descriptionBuilder = new StringBuilder();
             for (String line : game.selectedPlayerClass.description) {
@@ -95,8 +95,9 @@ public class RunConfigScreen extends AbstractUIScreen {
             classDescriptionLabel.x = getMidX() - width / 2;
         } else {
             classnameLabel.text = new Text(game.selectedPlayerClass.name()).glitchy();
-            classDescriptionLabel.text = new Text(game.selectedPlayerClass.hint);
-            classDescriptionLabel.x = getMidX() - UIUtil.getFontStringWidth(game.selectedPlayerClass.hint, game.font) / 2;
+            String text = "Requires \"" + game.selectedPlayerClass.unlockAchievement.replace("_", " ") + "\" to unlock";
+            classDescriptionLabel.text = new Text(text);
+            classDescriptionLabel.x = getMidX() - UIUtil.getFontStringWidth(text, game.font) / 2;
         }
 
         if (skinDisplay.getDisplayedClass() != game.selectedPlayerClass)

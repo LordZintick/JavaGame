@@ -75,7 +75,7 @@ public class Projectile extends AbstractGameObject {
     @Override
     public void update(float deltaTime) {
         if (aimAtCursor) {
-            angle = movementVector.angleDeg() - 90;
+            angle = movementVector.angleDeg();
 
             this.collisionRect.set(
                 x - width * 8 + MathUtils.cosDeg(movementVector.angleDeg()) * 50,

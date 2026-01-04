@@ -1,11 +1,13 @@
 package com.lordzintick.control;
 
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.Vector2;
 import com.lordzintick.MainGame;
 import com.lordzintick.core.Logger;
 import com.lordzintick.ui.widget.Widget;
 import com.lordzintick.util.MathUtil;
+
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
 
 /**
  * A wrapper class around {@link InputProcessor} for game-specific input handling
@@ -15,6 +17,7 @@ public final class Input implements InputProcessor {
 
     private final MainGame game;
     public boolean[] mouseButtonsPressed = new boolean[] {false, false, false, false, false};
+    public final ArrayList<BiConsumer<Float, Float>> scrollListeners = new ArrayList<>();
 
     public Input(MainGame game) {
         this.game = game;
@@ -109,6 +112,9 @@ public final class Input implements InputProcessor {
 
     @Override
     public boolean scrolled(float deltaX, float deltaY) {
+        for (BiConsumer<Float, Float> listener : scrollListeners) {
+            listener.accept(deltaX, deltaY);
+        }
         return false;
     }
 }

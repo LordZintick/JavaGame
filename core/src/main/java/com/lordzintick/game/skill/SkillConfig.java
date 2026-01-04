@@ -197,7 +197,7 @@ public final class SkillConfig {
     }
     );
     public static final SkillConfig PETAL = new SkillConfig(
-        4, 6, 1, 650, 0, 0, true, (proj, delta) -> {}, (proj, ent) -> {
+        6, 4, 1, 650, 0, 0, true, (proj, delta) -> {}, (proj, ent) -> {
         if (proj.screen.game.random.nextInt(10) == 0)
             proj.owner.heal(1);
     }

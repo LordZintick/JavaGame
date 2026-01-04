@@ -141,10 +141,10 @@ public class MainGameScreen extends AbstractGameScreen {
         levelLabel.text = new Text("Level " + player.level + " (" + (int) player.xp + "/" + player.getRequiredXP() + ")").setColor(Color.GOLDENROD);
         levelLabel.x = getMidX() - UIUtil.getFontStringWidth(levelLabel.text.text, game.font) / 2;
 
+        difficultyMultiplier += 0.001f * deltaTime;
         spawnCooldown -= deltaTime;
         if (spawnCooldown <= 0) {
-            difficultyMultiplier += 0.01f;
-            spawnCooldown = game.random.nextFloat(0.75f, 1.5f);
+            spawnCooldown = Math.max(game.random.nextFloat(0.75f, 1.5f) - difficultyMultiplier / 2, 0.1f);
             HostileEntity mob = EntityHelper.getWeightedRandomEntity(game.random).build(this, player);
             float w = Gdx.graphics.getWidth();
             float hw = w / 2;

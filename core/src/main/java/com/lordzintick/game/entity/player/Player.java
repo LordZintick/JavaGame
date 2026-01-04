@@ -2,12 +2,9 @@ package com.lordzintick.game.entity.player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector4;
-import com.lordzintick.audio.AudioManager;
-import com.lordzintick.control.Keybinds;
 import com.lordzintick.game.accessory.Accessory;
 import com.lordzintick.game.entity.Entity;
 import com.lordzintick.game.entity.effect.Effect;
@@ -15,13 +12,12 @@ import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.game.screen.MainGameScreen;
 import com.lordzintick.game.skill.Skill;
 import com.lordzintick.game.skill.SkillType;
-import com.lordzintick.game.skill.SkillTypes;
 import com.lordzintick.util.Direction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 
+@SuppressWarnings("UnreachableCode")
 public class Player extends Entity {
     public int maxMana = 100;
     public int mana = maxMana;
@@ -190,12 +186,19 @@ public class Player extends Entity {
     }
 
     @Override
+    public void heal(float amount) {
+        super.heal(amount);
+        screen.game.gameData.totalHealthHealed += amount;
+    }
+
+    @Override
     public void damage(float amount) {
         tryDamage(amount);
     }
 
     @Override
     public void onDeath() {
+        screen.game.gameData.totalDeaths++;
         LOGGER.log("Oh noes! You died!");
         Gdx.app.exit();
     }
@@ -231,9 +234,11 @@ public class Player extends Entity {
         float val = screen.game.random.nextFloat();
         if (val <= blockPower && blockPower > 0) {
             screen.game.audio.get("block").play();
+            screen.game.gameData.totalDamageBlocked += amount;
         } else {
             health -= amount;
             screen.game.audio.get("player_hit").play();
+            screen.game.gameData.totalDamageTaken += amount;
         }
     }
 

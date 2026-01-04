@@ -46,6 +46,11 @@ public class TitleScreen extends AbstractUIScreen {
             LOGGER.log("Stopping!");
             Gdx.app.exit();
         }));
+
+        widgets.add(new TextButton(this, new Text("Achievements").setAlign(Align.center), Gdx.graphics.getWidth() - 138, 20, 256, 40, () -> {
+            game.audio.get("confirm").play();
+            game.changeScreen(game.screenHolder.ACHIEVEMENTS);
+        }));
     }
 
     @Override

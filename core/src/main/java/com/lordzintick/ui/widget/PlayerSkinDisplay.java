@@ -43,7 +43,7 @@ public class PlayerSkinDisplay extends Widget {
             }
         }
 
-        if (!screen.game.gameData.unlockedClasses.get(playerClass.name().toLowerCase(Locale.ROOT))) {
+        if (!screen.game.selectedPlayerClass.checkUnlocked(screen.game)) {
             batch.setColor(Color.BLACK);
         }
         batch.draw(classFrames[frame][0], x, y, width, height);

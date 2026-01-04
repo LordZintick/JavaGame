@@ -2,18 +2,13 @@ package com.lordzintick.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
 import com.lordzintick.game.AbstractGameObject;
 import com.lordzintick.game.entity.effect.Effect;
 import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.util.Direction;
-import com.lordzintick.util.MathUtil;
-
-import java.util.ArrayList;
 
 public abstract class HostileEntity extends Entity {
     protected Vector2 moveVector = Vector2.Zero;
@@ -79,10 +74,7 @@ public abstract class HostileEntity extends Entity {
         if (sound != null && !sound.stream) {
             sound.play();
         }
-        screen.game.gameData.enemiesKilled++;
-        if (screen.game.gameData.enemiesKilled >= 200 && !screen.game.gameData.unlockedClasses.get("warrior")) {
-            screen.game.gameData.unlockedClasses.put("warrior", true);
-        }
+        screen.game.gameData.totalEnemiesKilled++;
     }
 
     @Override
@@ -99,6 +91,7 @@ public abstract class HostileEntity extends Entity {
         if (getHurtSound() != null) {
             getHurtSound().play();
         }
+        screen.game.gameData.totalDamageDone += amount;
     }
 
     @Override
