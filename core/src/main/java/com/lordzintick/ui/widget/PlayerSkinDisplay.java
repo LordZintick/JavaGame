@@ -1,5 +1,6 @@
 package com.lordzintick.ui.widget;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -42,6 +43,10 @@ public class PlayerSkinDisplay extends Widget {
             }
         }
 
+        if (!screen.game.gameData.unlockedClasses.get(playerClass.name().toLowerCase(Locale.ROOT))) {
+            batch.setColor(Color.BLACK);
+        }
         batch.draw(classFrames[frame][0], x, y, width, height);
+        batch.setColor(Color.WHITE);
     }
 }

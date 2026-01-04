@@ -9,6 +9,7 @@ import com.lordzintick.core.Logger;
 import com.lordzintick.ui.widget.Widget;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An abstract base class from which {@link com.lordzintick.game.screen.AbstractGameScreen} and {@link com.lordzintick.ui.screen.AbstractUIScreen} extend
@@ -18,6 +19,7 @@ public abstract class BaseScreen {
     public final MainGame game;
     public final ArrayList<Widget> widgets = new ArrayList<>();
     protected boolean paused = false;
+    private int playingIndex = -1;
 
     /**
      * Constructs a new {@link BaseScreen} with the provided {@link MainGame} and adds the initial widgets to it
@@ -31,10 +33,10 @@ public abstract class BaseScreen {
     /**
      * Provides the background music to play when this screen is open.<br>
      * Return {@code null} to disable.<br>
-     * Also note that this MUST be a music track ({@link Sound#stream} = {@code true}) in order to work correctly
-     * @return The {@link Sound} of the background music to play when this screen is open
+     * Also note that all of these MUST be music tracks ({@link Sound#stream} = {@code true}) in order to work correctly
+     * @return A list of {@link Sound}s of which to pick a random one to play while this screen is open
      */
-    public Sound getBackgroundMusic() {
+    public List<Sound> getBackgroundMusic() {
         return null;
     }
 
@@ -61,15 +63,32 @@ public abstract class BaseScreen {
     protected abstract void addWidgets();
 
     public void startMusic() {
-        if (getBackgroundMusic() != null && getBackgroundMusic().stream) {
-            getBackgroundMusic().play();
+        if (getBackgroundMusic() == null) return;
+
+        if (playingIndex == -1) playingIndex = game.random.nextInt(getBackgroundMusic().size());
+        Sound backgroundMusic = getBackgroundMusic().get(playingIndex);
+
+        if (backgroundMusic != null && backgroundMusic.stream) {
+            backgroundMusic.play(music -> {
+                playingIndex = -1;
+                startMusic();
+            });
         }
     }
 
     public void pauseMusic() {
-        if (getBackgroundMusic() != null && getBackgroundMusic().stream) {
-            getBackgroundMusic().pause();
+        if (getBackgroundMusic() == null) return;
+        Sound backgroundMusic = getBackgroundMusic().get(Math.max(playingIndex, 0));
+
+        if (backgroundMusic != null && backgroundMusic.stream) {
+            backgroundMusic.pause();
         }
+    }
+
+    public String getPlayingBackgroundMusic() {
+        if (getBackgroundMusic() == null) return null;
+        if (playingIndex == -1) return getBackgroundMusic().get(0).fileName;
+        return getBackgroundMusic().get(playingIndex).fileName;
     }
 
     public void pause() {

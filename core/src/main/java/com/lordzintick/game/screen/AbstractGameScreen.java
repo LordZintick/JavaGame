@@ -76,16 +76,11 @@ public abstract class AbstractGameScreen extends BaseScreen {
     }
 
     public void addParticle(TextureRegion[] frames, float x, float y, Vector4 velocity, float scale, float frameTime, float lifeTime) {
-        addParticle(frames, x, y, false, velocity, scale, frameTime, lifeTime);
-    }
-
-    public void addParticle(TextureRegion[] frames, float x, float y, boolean extraLogging, Vector4 velocity, float scale, float frameTime, float lifeTime) {
         if (Math.abs(x) >= Gdx.graphics.getWidth() * 2 || Math.abs(y) >= Gdx.graphics.getWidth() * 2 || x == 0 || y == 0) return;
 
         Particle particle = new Particle(this, frames, scale, frameTime, lifeTime);
         particle.x = x;
         particle.y = y;
-        particle.extraLogging = extraLogging;
         particle.velocity = velocity;
         queuedObjects.add(particle);
     }

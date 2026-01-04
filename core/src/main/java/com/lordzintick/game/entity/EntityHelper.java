@@ -13,6 +13,8 @@ public final class EntityHelper {
     public static final HostileEntityFactory<IrradiatedZombie> IRRADIATED_ZOMBIE = register("irradiated_zombie", 5, IrradiatedZombie::new);
     public static final HostileEntityFactory<FrostWalker> FROST_WALKER = register("frost_walker", 35, FrostWalker::new);
     public static final HostileEntityFactory<Barbarian> BARBARIAN = register("barbarian", 20, Barbarian::new);
+    public static final HostileEntityFactory<QueenAnt> QUEEN_ANT = register("queen_ant", 8, QueenAnt::new);
+    public static final HostileEntityFactory<Ant> ANT = register("ant", 50, Ant::new);
 
     public static int getTotalWeight() {
         int totalWeight = 0;

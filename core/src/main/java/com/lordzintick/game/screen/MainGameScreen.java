@@ -26,6 +26,7 @@ import com.lordzintick.util.UIUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * An implementation of the {@link AbstractGameScreen} class representing the main game screen containing the primary game area
@@ -128,8 +129,8 @@ public class MainGameScreen extends AbstractGameScreen {
     public void update(float deltaTime) {
         super.update(deltaTime);
 
-        if (player.score > game.highscore) {
-            game.highscore = player.score;
+        if (player.score > game.gameData.highscore) {
+            game.gameData.highscore = player.score;
         }
 
         healthLabel.text = new Text("HP: " + (int) player.health + "/" + player.getMaxHealth()).setColor(Color.RED);
@@ -273,7 +274,13 @@ public class MainGameScreen extends AbstractGameScreen {
     }
 
     @Override
-    public Sound getBackgroundMusic() {
-        return game.audio.GAME_MUSIC;
+    public List<Sound> getBackgroundMusic() {
+        return ListUtil.listOf(
+            game.audio.get("game_music_1"),
+            game.audio.get("game_music_2"),
+            game.audio.get("game_music_3"),
+            game.audio.get("game_music_4"),
+            game.audio.get("game_music_5")
+        );
     }
 }

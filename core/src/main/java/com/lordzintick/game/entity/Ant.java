@@ -2,36 +2,25 @@ package com.lordzintick.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.lordzintick.audio.Sound;
-import com.lordzintick.game.entity.effect.RageEffect;
 import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 
-public class Barbarian extends HostileEntity {
-    private final RageEffect rage;
+public class Ant extends RotatingHostileEntity {
+    public boolean isSpawned = true;
+
     /**
      * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
      *
      * @param screen  The {@link AbstractGameScreen} containing this entity
-     * @param player
      */
-    public Barbarian(AbstractGameScreen screen, Player player) {
-        super(screen, screen.game.assets.get("textures/game/mobs/barbarian.png"), 6, 12, player);
-        scale = 8f;
-        rage = new RageEffect(screen.game, 999, 1);
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-
-        if (!effects.contains(rage)) {
-            effects.add(rage);
-        }
+    public Ant(AbstractGameScreen screen, Player player) {
+        super(screen, screen.game.assets.get("textures/game/mobs/ant.png"), 6, 8, player);
+        scale = 7f;
     }
 
     @Override
     protected float getMoveSpeed() {
-        return 240f;
+        return 190f;
     }
 
     @Override
@@ -46,12 +35,12 @@ public class Barbarian extends HostileEntity {
 
     @Override
     public int getScore() {
-        return 15;
+        return isSpawned ? 10 : 2;
     }
 
     @Override
     public int getXP() {
-        return 4;
+        return 1;
     }
 
     @Override
@@ -61,11 +50,11 @@ public class Barbarian extends HostileEntity {
 
     @Override
     protected float getFrameTime() {
-        return 0.1f;
+        return 0.25f;
     }
 
     @Override
     public int getMaxHealth() {
-        return 15;
+        return isSpawned ? 8 : 5;
     }
 }

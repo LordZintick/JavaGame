@@ -30,7 +30,7 @@ public abstract class Entity extends AbstractGameObject {
     public boolean moving = false;
     protected double animTicks = 0;
     protected double ticks = 0;
-    private int frame = 0;
+    protected int frame = 0;
     public float health = 999;
     public float iframes = 0;
     public Color colorModifier = Color.WHITE;
@@ -73,17 +73,18 @@ public abstract class Entity extends AbstractGameObject {
     }
 
     public void damage(float amount) {
-        health -= amount;
-        iframes = 0.25f;
+        damage(amount, false);
     }
 
     public void damage(float amount, boolean noImmunity) {
         health -= amount;
+        if (!noImmunity)
+            iframes = 0.25f;
     }
 
     public void heal(float amount) {
         this.health = Math.min(getMaxHealth(), health + amount);
-        screen.game.audio.HEAL.play();
+        screen.game.audio.get("heal").play();
     }
 
     @Override

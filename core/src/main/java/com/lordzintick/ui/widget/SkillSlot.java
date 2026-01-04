@@ -56,6 +56,7 @@ public class SkillSlot extends Widget {
     public void click(int button) {
         if (button == Input.Buttons.LEFT && player.skillPoints > 0) {
             if (player.equippingSkill != null && index < 3) {
+                screen.game.audio.get("place").play();
                 LOGGER.log("Equipping spell \"" + player.equippingSkill.type.displayName + "\" into slot " + index);
                 slottedSkill = player.equippingSkill;
                 player.equippedSkills[index] = player.equippingSkill;
@@ -69,6 +70,7 @@ public class SkillSlot extends Widget {
             }
 
             if (player.equippingSkill == null && index >= 3 && this.slottedSkill != null) {
+                screen.game.audio.get("pickup").play();
                 LOGGER.log("Selecting spell \"" + slottedSkill.type.displayName + "\" from slot " + index);
                 player.equippingSkill = slottedSkill;
             }

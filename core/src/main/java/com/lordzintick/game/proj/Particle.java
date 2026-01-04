@@ -22,7 +22,6 @@ public class Particle extends AbstractGameObject {
     public final float frameTime;
     private final float lifeTime;
     private float angle = 0;
-    public boolean extraLogging = false;
 
     public Particle(AbstractGameScreen screen, TextureRegion[] frames, float scale, float frameTime, float lifeTime) {
         super(screen);
@@ -58,7 +57,6 @@ public class Particle extends AbstractGameObject {
         ticks += deltaTime;
         if (ticks >= lifeTime || scale <= 0) {
             shouldRemove = true;
-            if (extraLogging) LOGGER.log("SHOULD REMOVE");
         }
     }
 }

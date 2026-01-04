@@ -40,6 +40,10 @@ public class StatModifier {
             }
         }
 
-        return type.description.replace("%ah", String.valueOf(Math.round(amount * 100))).replace("%a", String.valueOf(Math.round(amount))).replace("%t", builder.toString());
+        return type.description.replace("%ah",
+            String.valueOf(Math.round(amount * 100)))
+            .replace("%a",
+                String.valueOf(amount == Math.floor(amount) ? Math.floor(amount) : Math.floor(amount * 10) / 10))
+            .replace("%t", builder.toString());
     }
 }

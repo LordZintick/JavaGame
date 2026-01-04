@@ -3,6 +3,7 @@ package com.lordzintick.game.skill;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.lordzintick.game.entity.Entity;
@@ -80,6 +81,21 @@ public final class SkillHelper {
         );
         projectile.x = entityPos.x;
         projectile.y = entityPos.y;
+
+        entity.screen.queueAddObject(projectile);
+        return projectile;
+    }
+
+    public static Projectile shootProjectile(String sheetname, Entity entity, float x, float y, float angle, Optional<String> skillID, SkillConfig config) {
+        Projectile projectile = new Projectile(
+            entity.screen, entity, MathUtils.cosDeg(angle), MathUtils.sinDeg(angle),
+            config.projWidth, config.projHeight, entity.screen.game.assets.get(sheetname), (int) (config.defaultDamage * (entity instanceof Player && skillID.isPresent() ? ((Player) entity).getSkillDamageMultiplier(entity.screen.game.skillTypes.SKILL_TYPES.get(skillID.get())) : 1)),
+            config.frameTime, config.speed / (entity instanceof Player ? 1 : 2.5f),
+            (entity instanceof Player ? config.pierce : 0), config.aimAtCursor, config.tick, config.hit, entity instanceof Player
+        );
+        projectile.x = x;
+        projectile.y = y;
+        projectile.angle = angle - 90;
 
         entity.screen.queueAddObject(projectile);
         return projectile;

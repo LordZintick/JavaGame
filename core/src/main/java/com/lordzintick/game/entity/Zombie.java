@@ -39,12 +39,12 @@ public class Zombie extends HostileEntity {
 
     @Override
     public Sound getHurtSound() {
-        return screen.game.audio.HIT;
+        return screen.game.audio.get("hit");
     }
 
     @Override
     public Sound getDeathSound() {
-        return screen.game.audio.KILL;
+        return screen.game.audio.get("kill");
     }
 
     @Override

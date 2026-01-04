@@ -6,7 +6,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.MusicLoader;
 import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.assets.loaders.resolvers.ClasspathFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -32,7 +31,7 @@ import com.lordzintick.game.accessory.AccessoryTypes;
 import com.lordzintick.game.entity.player.PlayerClass;
 import com.lordzintick.game.screen.MainGameScreen;
 import com.lordzintick.game.skill.SkillTypes;
-import com.lordzintick.ui.screen.SelectClassScreen;
+import com.lordzintick.ui.screen.RunConfigScreen;
 import com.lordzintick.ui.screen.TitleScreen;
 import com.lordzintick.util.BaseScreen;
 import com.lordzintick.util.UIUtil;
@@ -40,6 +39,7 @@ import com.lordzintick.util.UIUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -95,8 +95,8 @@ public class MainGame extends ApplicationAdapter {
     public Texture cooldownTexture;
     public PlayerClass selectedPlayerClass = PlayerClass.MAGE;
     public AssetManager assets;
-    public FileHandle highscoreFile;
-    public int highscore = 0;
+    public FileHandle dataFile;
+    public GameData gameData;
     public boolean loadedAssets = false;
     public AudioManager audio;
     public Keybinds keybinds;
@@ -132,21 +132,6 @@ public class MainGame extends ApplicationAdapter {
         loadAllAssets(audioFolder);
         loadAllAssets(texturesFolder);
 
-        // Initialize highscore file
-        highscoreFile = Gdx.files.local("highscore.txt");
-        if (!highscoreFile.exists()) {
-            highscoreFile.parent().mkdirs();
-            try {
-                if (highscoreFile.file().createNewFile()) {
-                    LOGGER.log("Successfully created highscore file at path " + highscoreFile.file().getAbsolutePath());
-                }
-            } catch (IOException e) {
-                LOGGER.log("IOException: " + e.getMessage());
-            }
-            highscoreFile.writeString("0", false);
-            LOGGER.log("Finished creating highscore file");
-        }
-
         // Initialize non-asset related instances
         LOGGER.log("Creating random and sprite batches...");
         random = new Random(System.currentTimeMillis());
@@ -163,6 +148,22 @@ public class MainGame extends ApplicationAdapter {
         gamepadInput = new GamepadInput(this);
         Controllers.addListener(gamepadInput);
 
+        // Initialize data file
+        dataFile = Gdx.files.local("gameData.json");
+        if (!dataFile.exists()) {
+            dataFile.parent().mkdirs();
+            try {
+                if (dataFile.file().createNewFile()) {
+                    LOGGER.log("Successfully created data file at path " + dataFile.file().getAbsolutePath());
+                }
+            } catch (IOException e) {
+                LOGGER.log("IOException: " + e.getMessage());
+            }
+            gameData = new GameData();
+            json.toJson(gameData, dataFile);
+            LOGGER.log("Finished creating data file");
+        }
+
         // Generate fonts
         LOGGER.log("Generating fonts...");
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.classpath("Monocraft.ttf"));
@@ -178,8 +179,7 @@ public class MainGame extends ApplicationAdapter {
         megaFont = fontGenerator.generateFont(param);
         fontGenerator.dispose();
 
-        String highscoreData = highscoreFile.readString().replace("\"", "").trim();
-        highscore = Integer.parseInt(highscoreData);
+        gameData = json.fromJson(GameData.class, dataFile);
     }
 
     @Override
@@ -235,10 +235,14 @@ public class MainGame extends ApplicationAdapter {
 
             uiBatch.begin();
             screen.renderUI(Gdx.graphics.getDeltaTime());
-            font.draw(uiBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 40, Gdx.graphics.getHeight() - font.getLineHeight() * 2);
-            font.setColor(Color.GOLD);
-            font.draw(uiBatch, "Highscore: " + highscore, 40, Gdx.graphics.getHeight() - font.getLineHeight() * 5);
-            font.setColor(Color.WHITE);
+            outlinedFont.draw(uiBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 40, Gdx.graphics.getHeight() - font.getLineHeight() * 2);
+            outlinedFont.setColor(Color.GOLD);
+            outlinedFont.draw(uiBatch, "Highscore: " + gameData.highscore, 40, Gdx.graphics.getHeight() - font.getLineHeight() * 5);
+            outlinedFont.setColor(Color.WHITE);
+
+            if (screen.isPaused()) {
+                megaFont.draw(uiBatch, "PAUSED", (float) Gdx.graphics.getWidth() / 2 - UIUtil.getFontStringWidth("PAUSED", megaFont) / 2, (float) Gdx.graphics.getHeight() - font.getLineHeight());
+            }
             uiBatch.end();
         } else {
             ScreenUtils.clear(Color.BLACK);
@@ -257,7 +261,7 @@ public class MainGame extends ApplicationAdapter {
      * @param newScreen The {@link BaseScreen} to change the screen to
      */
     public void changeScreen(BaseScreen newScreen) {
-        boolean musicChange = this.screen.getBackgroundMusic() != newScreen.getBackgroundMusic();
+        boolean musicChange = !Objects.equals(this.screen.getPlayingBackgroundMusic(), newScreen.getPlayingBackgroundMusic());
         if (musicChange) {
             this.screen.pauseMusic();
         }
@@ -269,7 +273,7 @@ public class MainGame extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        // Dispose the batches, fonts, the current screen, and the tilemap handler
+        // Dispose the batches, fonts, and the current screen
         gameBatch.dispose();
         uiBatch.dispose();
         mapBatch.dispose();
@@ -277,13 +281,11 @@ public class MainGame extends ApplicationAdapter {
         megaFont.dispose();
         screen.dispose();
 
-        effectAtlas[0][0].getTexture().dispose();
-        particlesAtlas[0][0].getTexture().dispose();
-        debugTexture.dispose();
-
+        // Dispose of all assets
         assets.dispose();
 
-        highscoreFile.writeString(String.valueOf(highscore), false);
+        // Write the new data to the data file
+        json.toJson(gameData, dataFile);
     }
 
     private void loadAllAssets(FileHandle folder) {
@@ -316,12 +318,12 @@ public class MainGame extends ApplicationAdapter {
      */
     public final class ScreenHolder {
         public final TitleScreen TITLE;
-        public final SelectClassScreen SELECT_CLASS;
+        public final RunConfigScreen RUN_CONFIG;
         public final MainGameScreen MAIN_GAME;
 
         private ScreenHolder() {
             TITLE = new TitleScreen(MainGame.this);
-            SELECT_CLASS = new SelectClassScreen(MainGame.this);
+            RUN_CONFIG = new RunConfigScreen(MainGame.this);
             MAIN_GAME = new MainGameScreen(MainGame.this);
         }
     }

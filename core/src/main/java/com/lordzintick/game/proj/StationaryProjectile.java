@@ -28,11 +28,12 @@ public class StationaryProjectile extends Projectile {
     public void update(float deltaTime) {
         super.update(deltaTime);
         if (aimAtCursor) {
+            float collX = x - width * 4 + MathUtils.cosDeg(direction.angleDeg()) * width * 4;
+            float collY = y - width * 4 + MathUtils.sinDeg(direction.angleDeg()) * width * 4;
             this.collisionRect.set(
-                x - width * 8 + MathUtils.cosDeg(direction.angleDeg()) * 50,
-                y - height * 8 + MathUtils.sinDeg(direction.angleDeg()) * 50,
-                width * 16,
-                height * 16
+                collX, collY,
+                width * 8,
+                width * 8
             );
         }
 

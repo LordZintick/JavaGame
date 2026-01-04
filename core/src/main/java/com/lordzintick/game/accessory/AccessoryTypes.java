@@ -88,7 +88,7 @@ public final class AccessoryTypes {
 
         register("dash_cooldown",
             new AccessoryType(icons[1][3], "Speedy Recovery", 3, true, mult -> ListUtil.listOf(
-                StatModifierTypes.DECREASE_DASH_COOLDOWN.getInstance(0.05f * mult)
+                StatModifierTypes.DECREASE_DASH_COOLDOWN.getInstance(0.1f * mult)
             ), ListUtil.listOf(
                 new Text("You can dash more frequently")
             )));

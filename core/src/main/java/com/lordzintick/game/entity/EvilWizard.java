@@ -83,6 +83,7 @@ public class EvilWizard extends HostileEntity {
 
         if (cooldown <= 0) {
             cooldown = 3f;
+            screen.game.audio.get("shoot");
             ownedProjectiles.add(SkillHelper.shootProjectile(projTexture, this, Optional.empty(), projConfig));
         }
     }
@@ -94,12 +95,12 @@ public class EvilWizard extends HostileEntity {
 
     @Override
     public Sound getHurtSound() {
-        return screen.game.audio.HIT;
+        return screen.game.audio.get("hit");
     }
 
     @Override
     public Sound getDeathSound() {
-        return screen.game.audio.KILL;
+        return screen.game.audio.get("kill");
     }
 
     @Override

@@ -61,6 +61,13 @@ public class Sound {
         }
     }
 
+    public void play(Music.OnCompletionListener onCompletionListener) {
+        if (stream) {
+            music.setOnCompletionListener(onCompletionListener);
+            music.play();
+        }
+    }
+
     /**
      * Stops the sound effect/music track
      */

@@ -36,73 +36,88 @@ public final class SkillTypes {
         register("fireball", new SkillType("Fireball", Rarity.COMMON, ListUtil.listOf(
             new Text("Shoots a small fast fireball"),
             new Text("Can set enemies on fire")
-        ), splitSprites[0][1], 5, 0.5f, game.audio.SHOOT,
+        ), splitSprites[0][1], 5, 0.5f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/fireball.png", player, Optional.of("fireball"), SkillConfig.FIREBALL)));
 
         // Uncommons
         register("iceball", new SkillType("Iceball", Rarity.UNCOMMON, ListUtil.listOf(
             new Text("Shoots a small, slow, and higher damage iceball that pierces once"),
             new Text("Slows enemies")
-        ), splitSprites[0][2], 10, 1.5f, game.audio.SHOOT,
+        ), splitSprites[0][2], 10, 1.5f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/iceball.png", player, Optional.of("iceball"), SkillConfig.ICEBALL)));
 
         register("acidball", new SkillType("Acidball", Rarity.UNCOMMON, ListUtil.listOf(
             new Text("Shoots a slightly slower ball of poison with moderate damage"),
             new Text("Poisons enemies")
-        ), splitSprites[0][6], 10, 1.5f, game.audio.SHOOT,
+        ), splitSprites[0][6], 10, 1.5f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/acidball.png", player, Optional.of("acidball"), SkillConfig.ACIDBALL)));
 
         register("waterball", new SkillType("Waterball", Rarity.UNCOMMON, ListUtil.listOf(
             new Text("Shoots a decently fast ball of water that doesn't do much damage,"),
             new Text("but it pierces four times and slightly pushes enemies back")
-        ), splitSprites[0][7], 8, 1.25f, game.audio.SHOOT,
+        ), splitSprites[0][7], 8, 1.25f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/waterball.png", player, Optional.of("waterball"), SkillConfig.WATERBALL)));
 
         register("lightningball", new SkillType("Lightningball", Rarity.UNCOMMON, ListUtil.listOf(
             new Text("Shoots an extremely fast ball of electrical energy that deals good damage")
-        ), splitSprites[0][8], 5, 0.75f, game.audio.SHOOT,
+        ), splitSprites[0][8], 5, 0.75f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/lightningball.png", player, Optional.of("lightningball"), SkillConfig.LIGHTNINGBALL)));
 
         register("flowerball", new SkillType("Flowerball", Rarity.UNCOMMON, ListUtil.listOf(
             new Text("Shoots a slow, low damage floral ball"),
             new Text("Has a small chance to heal you for 1 health")
-        ), splitSprites[0][9], 10, 1.5f, game.audio.SHOOT,
+        ), splitSprites[0][9], 10, 1.5f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/flowerball.png", player, Optional.of("flowerball"), SkillConfig.FLOWERBALL)));
+
+        register("petal", new SkillType("Petal", Rarity.UNCOMMON, ListUtil.listOf(
+            new Text("Shoots a fast, small, and low damage petal"),
+            new Text("Has a very small chance to heal you for 1 health")
+        ), splitSprites[2][1], 1, 0.25f, game.audio.get("shoot"),
+            (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/petal.png", player, Optional.of("petal"), SkillConfig.PETAL)));
 
         // Rares
         register("poison_nova", new SkillType("Poison Nova", Rarity.RARE, ListUtil.listOf(
             new Text("Emits a poison nova around you that damages enemies"),
             new Text("Poisons enemies")
-        ), splitSprites[0][3], 25, 3.5f, game.audio.KABOOM,
+        ), splitSprites[0][3], 25, 3.5f, game.audio.get("kaboom"),
             (player, damageMult) -> SkillHelper.placeStationaryProjectile("textures/game/skills/poison_nova.png", player, Optional.of("poison_nova"), SkillConfig.POISON_NOVA)));
 
         register("lightning_bolt", new SkillType("Lightning Bolt", Rarity.RARE, ListUtil.listOf(
             new Text("Shoots a super fast lightning bolt"),
             new Text("Pierces through three enemies")
-        ), splitSprites[0][0], 4, 0.75f, game.audio.SHOOT,
+        ), splitSprites[0][0], 4, 0.75f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/lightning_bolt.png", player, Optional.of("ligntning_bolt"), SkillConfig.LIGHTNING_BOLT)));
 
         register("plasma_bolt", new SkillType("Plasma Bolt", Rarity.RARE, ListUtil.listOf(
             new Text("Shoots an infinitely piercing but low damage bolt of superheated energy"),
             new Text("Burns enemies")
-        ), splitSprites[0][4], 8, 1.25f, game.audio.SHOOT,
+        ), splitSprites[0][4], 8, 1.25f, game.audio.get("shoot"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/plasma_bolt.png", player, Optional.of("plasma_bolt"), SkillConfig.PLASMA_BOLT)));
 
         // Epics
         register("wave", new SkillType("Wave", Rarity.EPIC, ListUtil.listOf(
             new Text("Summons a large wave to blow your enemies away"),
             new Text("Does moderate damage but knocks back enemies greatly")
-        ), splitSprites[2][0], 20, 4f, game.audio.MEGA_SLASH,
+        ), splitSprites[2][0], 20, 4f, game.audio.get("mega_slash"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/wave.png", player, Optional.of("wave"), SkillConfig.WAVE)));
+
+        register("petalstorm", new SkillType("Petalstorm", Rarity.EPIC, ListUtil.listOf(
+            new Text("Shoots a rotating ball of floral destruction"),
+            new Text("Pierces through 8 enemies"),
+            new Text("Has a chance to heal you on hit"),
+            new Text("Fires small petals in four directions every 3/4 second"),
+            new Text("Each petal has a small chance to heal you")
+        ), splitSprites[2][2], 15, 5f, game.audio.get("shoot"),
+            (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/petalstorm_ball.png", player, Optional.of("petalstorm"), SkillConfig.PETALSTORM_BALL)));
 
         // Legendaries
         register("laser_beam", new SkillType("Laser Beam", Rarity.LEGENDARY, ListUtil.listOf(
             new Text("Shoots a concentrated beam of pure evaporating energy towards your cursor for 8 seconds"),
             new Text("Deals constant damage to any nearby mobs and sets them on fire"),
             new Text("Comes with a hefty cooldown and mana cost though")
-        ), splitSprites[0][5], 50, 25f, game.audio.LASER,
+        ), splitSprites[0][5], 50, 25f, game.audio.get("laser"),
             (player, damageMult) -> {
-                game.audio.KABOOM.play();
+                game.audio.get("kaboom").play();
                 SkillHelper.placeStationaryProjectile(
                     "textures/game/skills/laser_beam.png",
                     player,
@@ -119,34 +134,34 @@ public final class SkillTypes {
         register("slash", new SkillType("Slash", Rarity.COMMON, ListUtil.listOf(
             new Text("Slashes in front of you, dealing moderate damage"),
             new Text("Has a small chance to apply bleed for a short time to enemies")
-        ), splitSprites[1][0], 0, 0.5f, game.audio.SLASH,
+        ), splitSprites[1][0], 0, 0.5f, game.audio.get("slash"),
             (player, damageMult) -> SkillHelper.triggerMeleeAttack("textures/game/skills/slash.png", player, Optional.of("slash"), SkillConfig.SLASH)));
 
         // Uncommons
         register("axe_throw", new SkillType("Axe Throw", Rarity.UNCOMMON, ListUtil.listOf(
             new Text("Throws a heavy axe toward your cursor"),
             new Text("Has a chance to apply bleed to enemies")
-        ), splitSprites[1][1], 0, 1.5f, game.audio.KABOOM,
+        ), splitSprites[1][1], 0, 1.5f, game.audio.get("kaboom"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/axe.png", player, Optional.of("axe"), SkillConfig.AXE)));
 
         register("mega_slash", new SkillType("Mega Slash", Rarity.UNCOMMON, ListUtil.listOf(
             new Text("Slashes in a wide arc in front of you,"),
             new Text("dealing high damage to anything unfortunate enough to be caught in the blast."),
             new Text("Applies a powerful bleed to enemeis")
-        ), splitSprites[1][3], 0, 6, game.audio.MEGA_SLASH,
+        ), splitSprites[1][3], 0, 6, game.audio.get("mega_slash"),
             (player, damageMult) -> SkillHelper.triggerMeleeAttack("textures/game/skills/mega_slash.png", player, Optional.of("mega_slash"), SkillConfig.MEGA_SLASH)));
 
         // Rares
         register("rage", new SkillType("Rage", Rarity.RARE, ListUtil.listOf(
             new Text("Enrages you, doubling your damage and increasing your speed for a short time")
-        ), splitSprites[1][4], 0, 15, game.audio.ROAR,
+        ), splitSprites[1][4], 0, 15, game.audio.get("roar"),
             (player, damageMult) -> player.applyEffect(new RageEffect(game, 10f, (int) Math.floor(damageMult)))));
 
         // Legendaries
         register("whirlwind", new SkillType("Whirlwind", Rarity.LEGENDARY, ListUtil.listOf(
             new Text("Shoots a whirlwind towards your cursor"),
             new Text("Deals low damage but moves super fast and has a chance to cause bleed")
-        ), splitSprites[1][2], 0, 0.25f, game.audio.SLASH,
+        ), splitSprites[1][2], 0, 0.25f, game.audio.get("slash"),
             (player, damageMult) -> SkillHelper.shootProjectile("textures/game/skills/whirlwind.png", player, Optional.of("whirlwind"), SkillConfig.WHIRLWIND)));
     }
 

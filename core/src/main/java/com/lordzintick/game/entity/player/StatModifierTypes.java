@@ -65,12 +65,12 @@ public final class StatModifierTypes {
 
     public static final StatModifierType INCREASE_DASH_TIME = register("increase_dash_time", new StatModifierType(
         (player, amount, targets) -> player.dashTime += amount,
-        "+%ah% dash time"
+        "+%a seconds dash time"
     ));
 
     public static final StatModifierType DECREASE_DASH_COOLDOWN = register("decrease_dash_cooldown", new StatModifierType(
         (player, amount, targets) -> player.dashCooldown -= amount,
-        "-%ah% dash cooldown"
+        "-%a seconds dash cooldown"
     ));
 
     private static <T extends StatModifierType> T register(String id, T t) {

@@ -103,7 +103,7 @@ public class Player extends Entity {
             levelupTicks -= deltaTime;
             screen.addParticle(
                 levelupParticles,
-                x + (float) width / 2, y + (float) height / 2, true,
+                x + (float) width / 2, y + (float) height / 2,
                 new Vector4(screen.game.random.nextFloat(-100, 100), screen.game.random.nextFloat(-100, 100), 0, 0),
                 5f, 0.1f, 1f
             );
@@ -111,7 +111,7 @@ public class Player extends Entity {
 
         remainingDashCooldown -= deltaTime;
         if (screen.game.keybinds.DASH.isPressed && dashTicks <= 0 && remainingDashCooldown <= 0) {
-            screen.game.audio.DASH.play();
+            screen.game.audio.get("dash").play();
             dashTicks = dashTime;
             speedMultiplier += dashSpeed;
             stoppedDashing = false;
@@ -230,10 +230,10 @@ public class Player extends Entity {
         iframes = 3f;
         float val = screen.game.random.nextFloat();
         if (val <= blockPower && blockPower > 0) {
-            screen.game.audio.BLOCK.play();
+            screen.game.audio.get("block").play();
         } else {
             health -= amount;
-            screen.game.audio.PLAYER_HIT.play();
+            screen.game.audio.get("player_hit").play();
         }
     }
 
@@ -275,7 +275,7 @@ public class Player extends Entity {
 
     public void levelUp() {
         level++;
-        screen.game.audio.LEVELUP.play();
+        screen.game.audio.get("levelup").play();
         levelupTicks += 2;
         screen.pause();
         skillPoints++;

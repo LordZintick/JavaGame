@@ -49,12 +49,12 @@ public class IrradiatedZombie extends HostileEntity {
 
     @Override
     public Sound getHurtSound() {
-        return screen.game.audio.MEGA_HIT;
+        return screen.game.audio.get("mega_hit");
     }
 
     @Override
     public Sound getDeathSound() {
-        return screen.game.audio.MEGA_KILL;
+        return screen.game.audio.get("mega_kill");
     }
 
     @Override

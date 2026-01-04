@@ -79,20 +79,23 @@ public abstract class HostileEntity extends Entity {
         if (sound != null && !sound.stream) {
             sound.play();
         }
+        screen.game.gameData.enemiesKilled++;
+        if (screen.game.gameData.enemiesKilled >= 200 && !screen.game.gameData.unlockedClasses.get("warrior")) {
+            screen.game.gameData.unlockedClasses.put("warrior", true);
+        }
     }
 
     @Override
     public void damage(float amount) {
-        super.damage(amount);
-        iframes = Math.min(0.25f, player.getMinimumCooldown());
-        if (getHurtSound() != null) {
-            getHurtSound().play();
-        }
+        this.damage(amount, false);
     }
 
     @Override
     public void damage(float amount, boolean noImmunity) {
         super.damage(amount, noImmunity);
+        if (!noImmunity)
+            iframes = Math.min(0.25f, player.getMinimumCooldown());
+
         if (getHurtSound() != null) {
             getHurtSound().play();
         }

@@ -1,18 +1,17 @@
 package com.lordzintick.ui.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
 import com.lordzintick.MainGame;
-import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
 import com.lordzintick.ui.widget.BouncingImageLabel;
 import com.lordzintick.ui.widget.TextButton;
 import com.lordzintick.ui.widget.TextLabel;
 import com.lordzintick.util.Direction;
+import com.lordzintick.util.ListUtil;
 import com.lordzintick.util.Text;
-import com.lordzintick.util.UIUtil;
+
+import java.util.List;
 
 /**
  * An implementation of {@link AbstractUIScreen} for the Title screen
@@ -39,7 +38,8 @@ public class TitleScreen extends AbstractUIScreen {
         widgets.add(new TextLabel(this, new Text("JavaGame").setAlign(Align.center).mega(), getMidX(), (int) (getMidY() * 1.5)));
         // Add start button
         widgets.add(new TextButton(this, new Text("Start").setAlign(Align.center), getMidX(), getMidY(), 128, 64, () -> {
-            game.changeScreen(game.screenHolder.SELECT_CLASS);
+            game.audio.get("confirm").play();
+            game.changeScreen(game.screenHolder.RUN_CONFIG);
         }));
         // Add quit button
         widgets.add(new TextButton(this, new Text("Quit").setAlign(Align.center), getMidX(), getMidY() - 74, 128, 64, () -> {
@@ -49,7 +49,7 @@ public class TitleScreen extends AbstractUIScreen {
     }
 
     @Override
-    public Sound getBackgroundMusic() {
-        return game.audio.TITLE_MUSIC;
+    public List<Sound> getBackgroundMusic() {
+        return ListUtil.listOf(game.audio.get("title_music"));
     }
 }

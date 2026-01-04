@@ -47,6 +47,7 @@ public class AccessorySlot extends Widget {
     @Override
     public void click(int button) {
         if (button == Input.Buttons.LEFT && player.skillPoints > 0) {
+            screen.game.audio.get("place").play();
             player.accessories.add(slottedAccessory);
             player.equippingSkill = null;
             slottedAccessory.modify(player);

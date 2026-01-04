@@ -2,56 +2,53 @@ package com.lordzintick.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.lordzintick.audio.Sound;
-import com.lordzintick.game.entity.effect.RageEffect;
 import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.screen.AbstractGameScreen;
 
-public class Barbarian extends HostileEntity {
-    private final RageEffect rage;
+public class QueenAnt extends RotatingHostileEntity {
     /**
      * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
      *
      * @param screen  The {@link AbstractGameScreen} containing this entity
-     * @param player
      */
-    public Barbarian(AbstractGameScreen screen, Player player) {
-        super(screen, screen.game.assets.get("textures/game/mobs/barbarian.png"), 6, 12, player);
-        scale = 8f;
-        rage = new RageEffect(screen.game, 999, 1);
+    public QueenAnt(AbstractGameScreen screen, Player player) {
+        super(screen, screen.game.assets.get("textures/game/mobs/queen_ant.png"), 6, 9, player);
+        scale = 10f;
     }
 
     @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-
-        if (!effects.contains(rage)) {
-            effects.add(rage);
-        }
+    public void damage(float amount, boolean noImmunity) {
+        super.damage(amount, noImmunity);
+        Ant minion = new Ant(screen, player);
+        minion.x = x;
+        minion.y = y;
+        minion.isSpawned = false;
+        screen.queueAddObject(minion);
     }
 
     @Override
     protected float getMoveSpeed() {
-        return 240f;
+        return 170f;
     }
 
     @Override
     public Sound getHurtSound() {
-        return screen.game.audio.get("hit");
+        return screen.game.audio.get("mega_hit");
     }
 
     @Override
     public Sound getDeathSound() {
-        return screen.game.audio.get("kill");
+        return screen.game.audio.get("mega_kill");
     }
 
     @Override
     public int getScore() {
-        return 15;
+        return 50;
     }
 
     @Override
     public int getXP() {
-        return 4;
+        return 10;
     }
 
     @Override
@@ -61,11 +58,11 @@ public class Barbarian extends HostileEntity {
 
     @Override
     protected float getFrameTime() {
-        return 0.1f;
+        return 0.5f;
     }
 
     @Override
     public int getMaxHealth() {
-        return 15;
+        return 35;
     }
 }

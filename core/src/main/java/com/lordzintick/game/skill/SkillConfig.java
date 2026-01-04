@@ -11,6 +11,7 @@ import com.lordzintick.game.entity.effect.PoisonEffect;
 import com.lordzintick.game.entity.effect.SlowEffect;
 import com.lordzintick.game.proj.Projectile;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
@@ -183,7 +184,7 @@ public final class SkillConfig {
     );
     public static final SkillConfig LASER_BEAM = new SkillConfig(
         64, 16, 8, 0, 999, 0.1f, 8, true, (proj, delta) -> {
-            proj.screen.game.audio.LASER_AMBIENT.play();
+            proj.screen.game.audio.get("laser_ambient").play();
     }, (proj, ent) -> {
             ent.applyEffect(new BurnEffect(proj.screen.game, 15, 2));
     }
@@ -193,6 +194,27 @@ public final class SkillConfig {
         Vector2 normal = proj.movementVector.cpy().nor();
             ent.x += normal.x * 128;
             ent.y += normal.y * 128;
+    }
+    );
+    public static final SkillConfig PETAL = new SkillConfig(
+        4, 6, 1, 650, 0, 0, true, (proj, delta) -> {}, (proj, ent) -> {
+        if (proj.screen.game.random.nextInt(10) == 0)
+            proj.owner.heal(1);
+    }
+    );
+    public static final SkillConfig PETALSTORM_BALL = new SkillConfig(
+        8, 8, 3, 300, 8, 0.25f, 0, false, (proj, delta) -> {
+            proj.angle += 1;
+            if (proj.generalTicks >= 0.75f) {
+                proj.resetGeneralTicks();
+                for (int i = 0; i < 4; i++) {
+                    float angle = 45 + proj.angle + i * 90;
+                    SkillHelper.shootProjectile("textures/game/skills/petal.png", proj.owner, proj.x + proj.width * 4, proj.y + proj.height * 4, angle, Optional.of("petalstorm"), SkillConfig.PETAL);
+                }
+            }
+    }, (proj, ent) -> {
+        if (proj.screen.game.random.nextInt(8) == 0)
+            proj.owner.heal(1);
     }
     );
 
