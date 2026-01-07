@@ -56,8 +56,9 @@ public class Player extends Entity {
         this.playerClass = playerClass;
         levelupParticles = new TextureRegion[] {screen.game.particlesAtlas[1][0], screen.game.particlesAtlas[1][1]};
         this.speed = 256;
-        x = (float) Gdx.graphics.getWidth() / 2;
-        y = (float) Gdx.graphics.getWidth() / 2;
+        float s = ((MainGameScreen) screen).mapScale;
+        x = 160 * s;
+        y = 160 * s;
         scale = 8f;
         equippedSkills = new Skill[] {screen.game.skillTypes.SKILL_TYPES.get(playerClass.startSkill).getInstance(), null, null};
     }
@@ -126,34 +127,34 @@ public class Player extends Entity {
             equippedSkills[2].cast(this);
         }
 
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
+        float s = ((MainGameScreen) screen).mapScale;
+        float w = 320 * s;
 
         if (screen.game.keybinds.get("up").isPressed || screen.game.keybinds.get("arrow_up").isPressed) {
             moving = true;
             direction = Direction.UP;
-            if (y + height <= w - w / 16)
+            if (y + height * scale <= w - w / 20)
                 y += speed * deltaTime * speedMultiplier;
         }
 
         if (screen.game.keybinds.get("down").isPressed || screen.game.keybinds.get("arrow_down").isPressed) {
             moving = true;
             direction = Direction.DOWN;
-            if (y >= w / 32)
+            if (y >= w / 20)
                 y -= speed * deltaTime * speedMultiplier;
         }
 
         if (screen.game.keybinds.get("left").isPressed || screen.game.keybinds.get("arrow_left").isPressed) {
             moving = true;
             direction = Direction.LEFT;
-            if (x >= w / 32)
+            if (x >= w / 20)
                 x -= speed * deltaTime * speedMultiplier;
         }
 
         if (screen.game.keybinds.get("right").isPressed || screen.game.keybinds.get("arrow_right").isPressed) {
             moving = true;
             direction = Direction.RIGHT;
-            if (x + width <= w - w / 10)
+            if (x + width * scale <= w - w / 20)
                 x += speed * deltaTime * speedMultiplier;
         }
 

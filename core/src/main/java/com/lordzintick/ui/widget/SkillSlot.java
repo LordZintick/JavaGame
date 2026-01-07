@@ -69,7 +69,7 @@ public class SkillSlot extends Widget {
                 return;
             }
 
-            if (player.equippingSkill == null && index >= 3 && this.slottedSkill != null) {
+            if (index >= 3 && this.slottedSkill != null) {
                 screen.game.audio.get("pickup").play();
                 LOGGER.log("Selecting spell \"" + slottedSkill.type.displayName + "\" from slot " + index);
                 player.equippingSkill = slottedSkill;

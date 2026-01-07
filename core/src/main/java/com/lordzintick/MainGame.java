@@ -31,6 +31,7 @@ import com.lordzintick.control.GamepadInput;
 import com.lordzintick.control.Input;
 import com.lordzintick.control.Keybinds;
 import com.lordzintick.core.Logger;
+import com.lordzintick.game.GameMap;
 import com.lordzintick.game.accessory.AccessoryTypes;
 import com.lordzintick.game.entity.player.PlayerClass;
 import com.lordzintick.game.screen.MainGameScreen;
@@ -110,6 +111,7 @@ public class MainGame extends ApplicationAdapter {
     public Achievements achievements;
     public float achievementTicks = 0;
     public Achievement displayingAchievement = null;
+    public GameMap selectedMap = GameMap.CLASSIC;
 
     /**
      * The current {@link BaseScreen} of the game
@@ -349,7 +351,7 @@ public class MainGame extends ApplicationAdapter {
     public final class ScreenHolder {
         public final TitleScreen TITLE;
         public final RunConfigScreen RUN_CONFIG;
-        public final MainGameScreen MAIN_GAME;
+        public MainGameScreen MAIN_GAME;
         public final AchievementScreen ACHIEVEMENTS;
 
         private ScreenHolder() {

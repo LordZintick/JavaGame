@@ -17,7 +17,7 @@ public final class AudioManager {
         // Music
         register("title_music", new IntroLoopSound(game, "audio/theme_song_intro.wav", "audio/theme_song_loop.wav", 1f));
         register("achievements_music", new Sound(game, "audio/pulsar.mp3", true, 1f, true));
-        register("game_music_1", new Sound(game, "audio/leap.mp3", false, 0.5f, true));
+        register("game_music_1", new Sound(game, "audio/leap.mp3", false, 1f, true));
         register("game_music_2", new Sound(game, "audio/rush_point.mp3", false, 0.5f, true));
         register("game_music_3", new Sound(game, "audio/perilous_dungeon.mp3", false, 0.5f, true));
         register("game_music_4", new Sound(game, "audio/monstervania_2.mp3", false, 0.5f, true));

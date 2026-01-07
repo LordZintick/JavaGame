@@ -46,6 +46,7 @@ public class MainGameScreen extends AbstractGameScreen {
     private float objCooldown = 60f;
     private boolean shuffledSlots = false;
     public float difficultyMultiplier = 1;
+    public final float mapScale = 8;
 
     /**
      * Constructs a new {@link MainGameScreen} with the provided {@link MainGame}
@@ -91,7 +92,7 @@ public class MainGameScreen extends AbstractGameScreen {
         player = new Player(this, game.selectedPlayerClass);
         queueAddObject(player);
 
-        map = game.assets.get("textures/game/map.png");
+        map = game.assets.get(game.selectedMap.filename);
     }
 
     @Override
@@ -100,6 +101,7 @@ public class MainGameScreen extends AbstractGameScreen {
             game.camera.position.set(0,0,0);
             game.camera.update();
             game.changeScreen(game.screenHolder.TITLE);
+            game.screenHolder.MAIN_GAME = new MainGameScreen(game);
         }));
 
         manaLabel = new TextLabel(this, new Text("manabanana"), getMidX() - 32, 158);
@@ -146,7 +148,7 @@ public class MainGameScreen extends AbstractGameScreen {
         if (spawnCooldown <= 0) {
             spawnCooldown = Math.max(game.random.nextFloat(0.75f, 1.5f) - difficultyMultiplier / 2, 0.1f);
             HostileEntity mob = EntityHelper.getWeightedRandomEntity(game.random).build(this, player);
-            float w = Gdx.graphics.getWidth();
+            float w = 320 * mapScale;
             float hw = w / 2;
             float bw = w * 1.5f;
             float x = game.random.nextFloat(-bw - 1, bw);
@@ -187,7 +189,7 @@ public class MainGameScreen extends AbstractGameScreen {
 
     @Override
     public void renderGame(float deltaTime) {
-        game.gameBatch.draw(map, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
+        game.gameBatch.draw(map, 0, 0, 320 * mapScale, 320 * mapScale);
         super.renderGame(deltaTime);
     }
 
