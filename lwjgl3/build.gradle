@@ -190,7 +190,9 @@ tasks.register("createJarzip", Zip) {
   dependsOn("cleanJarZip")
   archiveFileName = "${appName}-jar.zip"
   destinationDirectory = file("${buildDir}/zips")
-  from fileTree("../assets")
+  from fileTree("../assets") {
+    exclude "gameData.json"
+  }
   from fileTree("${buildDir}/libs").include("*-${projectVersion}.jar")
 }
 
@@ -199,7 +201,9 @@ tasks.register("createWinzip", Zip) {
   dependsOn("cleanWinZip")
   archiveFileName = "${appName}-winX64.zip"
   destinationDirectory = file("${buildDir}/zips")
-  from fileTree("../assets")
+  from fileTree("../assets") {
+    exclude "gameData.json"
+  }
   from zipTree("${buildDir}/construo/dist/${appName}-winX64.zip")
 }
 
@@ -208,6 +212,8 @@ tasks.register("createLinzip", Zip) {
   dependsOn("cleanLinZip")
   archiveFileName = "${appName}-linuxX64.zip"
   destinationDirectory = file("${buildDir}/zips")
-  from fileTree("../assets")
+  from fileTree("../assets") {
+    exclude "gameData.json"
+  }
   from zipTree("${buildDir}/construo/dist/${appName}-linuxX64.zip")
 }

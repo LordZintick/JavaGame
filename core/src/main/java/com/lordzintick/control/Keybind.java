@@ -31,12 +31,15 @@ public class Keybind {
     }
 
     public boolean checkContext(BaseScreen screen) {
-        return (screen instanceof AbstractUIScreen && context == Context.UI) || (screen instanceof AbstractGameScreen && (context == Context.GAME || context == Context.GAMEPAD));
+        return
+            (screen instanceof AbstractUIScreen && (context == Context.UI || context == Context.GAMEPAD_UI)) ||
+                (screen instanceof AbstractGameScreen && (context == Context.GAME || context == Context.GAMEPAD));
     }
 
     public enum Context {
         UI,
         GAME,
-        GAMEPAD
+        GAMEPAD,
+        GAMEPAD_UI
     }
 }

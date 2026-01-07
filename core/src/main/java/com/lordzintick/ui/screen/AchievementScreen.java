@@ -7,6 +7,7 @@ import com.lordzintick.MainGame;
 import com.lordzintick.achievement.Achievement;
 import com.lordzintick.achievement.Achievements;
 import com.lordzintick.audio.Sound;
+import com.lordzintick.control.Keybinds;
 import com.lordzintick.ui.widget.AchievementDisplay;
 import com.lordzintick.ui.widget.TextButton;
 import com.lordzintick.util.ListUtil;
@@ -36,7 +37,7 @@ public class AchievementScreen extends AbstractUIScreen {
         }
 
         game.input.scrollListeners.add((deltaX, deltaY) -> {
-            offset += deltaY * 10;
+            offset += deltaY * 100;
         });
     }
 
@@ -51,6 +52,15 @@ public class AchievementScreen extends AbstractUIScreen {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+
+        if (game.keybinds.get("scroll_up").isPressed) {
+            offset += 100;
+        }
+
+        if (game.keybinds.get("scroll_down").isPressed) {
+            offset -= 100;
+        }
+
         for (int i = 0; i < achievementDisplays.size(); i++) {
             AchievementDisplay display = achievementDisplays.get(i);
             display.y = Gdx.graphics.getHeight() - 84 - i * 74 + offset;

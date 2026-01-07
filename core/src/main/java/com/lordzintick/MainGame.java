@@ -127,9 +127,9 @@ public class MainGame extends ApplicationAdapter {
         // Initialize the asset manager
         LOGGER.log("Initializing asset manager...");
         assets = new AssetManager(new InternalFileHandleResolver());
-        assets.setLoader(Texture.class, "png", new TextureLoader(new InternalFileHandleResolver()));
-        assets.setLoader(com.badlogic.gdx.audio.Sound.class, "wav", new SoundLoader(new InternalFileHandleResolver()));
-        assets.setLoader(Music.class, "mp3", new MusicLoader(new InternalFileHandleResolver()));
+        assets.setLoader(Texture.class, new TextureLoader(new InternalFileHandleResolver()));
+        assets.setLoader(com.badlogic.gdx.audio.Sound.class, new SoundLoader(new InternalFileHandleResolver()));
+        assets.setLoader(Music.class, new MusicLoader(new InternalFileHandleResolver()));
 
         // Load textures and audio
         LOGGER.log("Loading assets...");
@@ -329,10 +329,10 @@ public class MainGame extends ApplicationAdapter {
                 if (name.endsWith("png")) {
                     LOGGER.log("Loading image file " + child.path());
                     assets.load(child.path(), Texture.class);
-                } else if (name.endsWith("wav")) {
+                } else if (Objects.equals(folder.nameWithoutExtension(), "sfx")) {
                     LOGGER.log("Loading sound file " + child.path());
                     assets.load(child.path(), Sound.class);
-                } else if (name.endsWith("mp3")) {
+                } else if (Objects.equals(folder.nameWithoutExtension(), "audio")) {
                     LOGGER.log("Loading music file " + child.path());
                     assets.load(child.path(), Music.class);
                 }

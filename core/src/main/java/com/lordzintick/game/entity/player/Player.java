@@ -106,7 +106,7 @@ public class Player extends Entity {
         }
 
         remainingDashCooldown -= deltaTime;
-        if (screen.game.keybinds.DASH.isPressed && dashTicks <= 0 && remainingDashCooldown <= 0) {
+        if (screen.game.keybinds.get("dash").isPressed && dashTicks <= 0 && remainingDashCooldown <= 0) {
             screen.game.audio.get("dash").play();
             dashTicks = dashTime;
             speedMultiplier += dashSpeed;
@@ -114,61 +114,57 @@ public class Player extends Entity {
             remainingDashCooldown = dashCooldown;
         }
 
-        if ((screen.game.input.mouseButtonsPressed[0] || screen.game.keybinds.ATTACK_1.isPressed) && equippedSkills[0] != null && ticks >= 1f) {
+        if ((screen.game.input.mouseButtonsPressed[0] || screen.game.keybinds.get("attack_1").isPressed) && equippedSkills[0] != null && ticks >= 1f) {
             equippedSkills[0].cast(this);
         }
 
-        if ((screen.game.input.mouseButtonsPressed[2] || screen.game.keybinds.ATTACK_2.isPressed) && equippedSkills[1] != null && ticks >= 1f) {
+        if ((screen.game.input.mouseButtonsPressed[2] || screen.game.keybinds.get("attack_2").isPressed) && equippedSkills[1] != null && ticks >= 1f) {
             equippedSkills[1].cast(this);
         }
 
-        if ((screen.game.input.mouseButtonsPressed[1] || screen.game.keybinds.ATTACK_3.isPressed) && equippedSkills[2] != null && ticks >= 1f) {
+        if ((screen.game.input.mouseButtonsPressed[1] || screen.game.keybinds.get("attack_3").isPressed) && equippedSkills[2] != null && ticks >= 1f) {
             equippedSkills[2].cast(this);
         }
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
-        if (screen.game.keybinds.UP.isPressed || screen.game.keybinds.ARROW_UP.isPressed || screen.game.keybinds.GAMEPAD_UP.isPressed) {
+        if (screen.game.keybinds.get("up").isPressed || screen.game.keybinds.get("arrow_up").isPressed) {
             moving = true;
             direction = Direction.UP;
             if (y + height <= w - w / 16)
                 y += speed * deltaTime * speedMultiplier;
         }
 
-        if (screen.game.keybinds.DOWN.isPressed || screen.game.keybinds.ARROW_DOWN.isPressed || screen.game.keybinds.GAMEPAD_DOWN.isPressed) {
+        if (screen.game.keybinds.get("down").isPressed || screen.game.keybinds.get("arrow_down").isPressed) {
             moving = true;
             direction = Direction.DOWN;
             if (y >= w / 32)
                 y -= speed * deltaTime * speedMultiplier;
         }
 
-        if (screen.game.keybinds.LEFT.isPressed || screen.game.keybinds.ARROW_LEFT.isPressed || screen.game.keybinds.GAMEPAD_LEFT.isPressed) {
+        if (screen.game.keybinds.get("left").isPressed || screen.game.keybinds.get("arrow_left").isPressed) {
             moving = true;
             direction = Direction.LEFT;
             if (x >= w / 32)
                 x -= speed * deltaTime * speedMultiplier;
         }
 
-        if (screen.game.keybinds.RIGHT.isPressed || screen.game.keybinds.ARROW_RIGHT.isPressed || screen.game.keybinds.GAMEPAD_RIGHT.isPressed) {
+        if (screen.game.keybinds.get("right").isPressed || screen.game.keybinds.get("arrow_right").isPressed) {
             moving = true;
             direction = Direction.RIGHT;
             if (x + width <= w - w / 10)
                 x += speed * deltaTime * speedMultiplier;
         }
 
-        if (!screen.game.keybinds.UP.isPressed
-            && !screen.game.keybinds.ARROW_UP.isPressed
-            && !screen.game.keybinds.GAMEPAD_UP.isPressed
-            && !screen.game.keybinds.DOWN.isPressed
-            && !screen.game.keybinds.ARROW_DOWN.isPressed
-            && !screen.game.keybinds.GAMEPAD_DOWN.isPressed
-            && !screen.game.keybinds.LEFT.isPressed
-            && !screen.game.keybinds.ARROW_LEFT.isPressed
-            && !screen.game.keybinds.GAMEPAD_LEFT.isPressed
-            && !screen.game.keybinds.RIGHT.isPressed
-            && !screen.game.keybinds.ARROW_RIGHT.isPressed
-            && !screen.game.keybinds.GAMEPAD_RIGHT.isPressed) {
+        if (!screen.game.keybinds.get("up").isPressed
+            && !screen.game.keybinds.get("arrow_up").isPressed
+            && !screen.game.keybinds.get("down").isPressed
+            && !screen.game.keybinds.get("arrow_down").isPressed
+            && !screen.game.keybinds.get("left").isPressed
+            && !screen.game.keybinds.get("arrow_left").isPressed
+            && !screen.game.keybinds.get("right").isPressed
+            && !screen.game.keybinds.get("arrow_right").isPressed) {
             moving = false;
         }
 

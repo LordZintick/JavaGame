@@ -16,7 +16,7 @@ public class Sound {
     public final float volume;
     public final boolean stream;
     private com.badlogic.gdx.audio.Sound sfx;
-    private Music music;
+    protected Music music;
 
     /**
      * Constructs a new {@link Sound} with the provided sound file name

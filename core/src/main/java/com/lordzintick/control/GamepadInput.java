@@ -28,7 +28,7 @@ public final class GamepadInput implements ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int button) {
-        for (Keybind keybind : game.keybinds.KEYBINDS.values()) {
+        for (Keybind keybind : game.keybinds.getKeybinds()) {
             // If the keybind's button is the one that was pressed, run the keybind's action and set it to pressed
             if (keybind.defaultKey == button && keybind.checkContext(game.screen) && keybind.context == Keybind.Context.GAMEPAD) {
                 keybind.isPressed = true;
@@ -39,7 +39,7 @@ public final class GamepadInput implements ControllerListener {
         if (button == controller.getMapping().buttonA) {
             for (Widget widget : game.screen.widgets) {
                 // Check if the mouse position is in the widgets' area, and call the according method
-                if (MathUtil.isPointInArea((int) game.gamepadCursorX,(int)  game.gamepadCursorY, widget.x, widget.y, widget.width, widget.height)) {
+                if (MathUtil.isPointInArea(game.gamepadCursorX, game.gamepadCursorY, widget.x, widget.y, widget.width, widget.height)) {
                     widget.click(button);
                 }
             }
@@ -49,7 +49,7 @@ public final class GamepadInput implements ControllerListener {
 
     @Override
     public boolean buttonUp(Controller controller, int button) {
-        for (Keybind keybind : game.keybinds.KEYBINDS.values()) {
+        for (Keybind keybind : game.keybinds.getKeybinds()) {
             // If the keybind's button is the one that was pressed, run the keybind's action and set it to pressed
             if (keybind.defaultKey == button && keybind.checkContext(game.screen) && keybind.context == Keybind.Context.GAMEPAD) {
                 keybind.isPressed = false;

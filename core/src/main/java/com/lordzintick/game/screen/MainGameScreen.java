@@ -141,7 +141,7 @@ public class MainGameScreen extends AbstractGameScreen {
         levelLabel.text = new Text("Level " + player.level + " (" + (int) player.xp + "/" + player.getRequiredXP() + ")").setColor(Color.GOLDENROD);
         levelLabel.x = getMidX() - UIUtil.getFontStringWidth(levelLabel.text.text, game.font) / 2;
 
-        difficultyMultiplier += 0.001f * deltaTime;
+        difficultyMultiplier += 0.002f * deltaTime;
         spawnCooldown -= deltaTime;
         if (spawnCooldown <= 0) {
             spawnCooldown = Math.max(game.random.nextFloat(0.75f, 1.5f) - difficultyMultiplier / 2, 0.1f);
