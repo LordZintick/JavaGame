@@ -1,9 +1,6 @@
 package com.lordzintick.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ListUtil {
     @SafeVarargs
@@ -16,5 +13,10 @@ public class ListUtil {
         ArrayList<V> values = new ArrayList<>(map.values());
 
         return keys.get(values.indexOf(value));
+    }
+
+    @SafeVarargs
+    public static <T> T choose(Random random, T... values) {
+        return values[random.nextInt(values.length)];
     }
 }

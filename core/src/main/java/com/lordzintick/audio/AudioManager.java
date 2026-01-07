@@ -26,7 +26,7 @@ public final class AudioManager {
         // SFX
         register("shoot", new Sound(game, "audio/sfx/fire.ogg", false, 1, false));
         register("hit", new Sound(game, "audio/sfx/hit.ogg", false, 0.5f, false));
-        register("levelup", new Sound(game, "audio/sfx/levelup_temp.ogg", false, 1, false));
+        register("levelup", new Sound(game, "audio/sfx/levelup.ogg", false, 1, false));
         register("player_hit", new Sound(game, "audio/sfx/player_hit.ogg", false, 1, false));
         register("kaboom", new Sound(game, "audio/sfx/kaboom.ogg", false, 0.5f, false));
         register("slash", new Sound(game, "audio/sfx/slash.ogg", false, 0.5f, false));

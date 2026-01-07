@@ -31,7 +31,8 @@ public class TitleScreen extends AbstractUIScreen {
                 case 1: dir = Direction.DOWN_LEFT; break;
                 case 2: dir = Direction.DOWN_RIGHT; break;
             }
-            widgets.add(new BouncingImageLabel(this, game.assets.get("textures/java.png"), game.random.nextInt(0, Math.max(Gdx.graphics.getWidth() - 100, 100)), game.random.nextInt(0, Math.max(Gdx.graphics.getHeight() - 100, 100)), 99, 99, dir));
+            String textureName = "icons/icon" + (game.random.nextInt(10) + 1) + ".png";
+            widgets.add(new BouncingImageLabel(this, game.assets.get("textures/" + textureName), game.random.nextInt(0, Math.max(Gdx.graphics.getWidth() - 100, 100)), game.random.nextInt(0, Math.max(Gdx.graphics.getHeight() - 100, 100)), 99, 99, dir));
         }
 
         // Add title
