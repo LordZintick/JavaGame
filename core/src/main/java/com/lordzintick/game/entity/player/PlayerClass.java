@@ -34,7 +34,7 @@ public enum PlayerClass {
             "A powerful berserker with a formidable arsenal of weaponry",
             "Gets a +100% bonus to max health & +10 block power"
         ),
-        "slash", "killer_2", player -> {
+        "slash", "killer_3", player -> {
             player.maxHealth *= 2;
             player.blockPower += 0.1f;
         }
