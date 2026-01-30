@@ -16,12 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class Accessory {
-    public final AccessoryType type;
+public class Accessory<T extends AccessoryType> {
+    public final T type;
     public final Rarity rarity;
     private final List<String> targets;
 
-    Accessory(AccessoryType type, Rarity rarity, List<String> targets) {
+    Accessory(T type, Rarity rarity, List<String> targets) {
         this.type = type;
         this.rarity = rarity;
         this.targets = targets;

@@ -5,11 +5,11 @@ import com.lordzintick.game.skill.SkillType;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class StatModifier {
-    public final StatModifierType type;
+public class StatModifier<T extends StatModifierType> {
+    public final T type;
     public final float amount;
 
-    StatModifier(StatModifierType type, float amount) {
+    StatModifier(T type, float amount) {
         this.type = type;
         this.amount = amount;
     }

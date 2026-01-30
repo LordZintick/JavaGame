@@ -11,6 +11,7 @@ import com.lordzintick.game.entity.effect.Effect;
 import com.lordzintick.game.screen.AbstractGameScreen;
 import com.lordzintick.game.screen.MainGameScreen;
 import com.lordzintick.game.skill.Skill;
+import com.lordzintick.game.skill.SkillMultiplierSet;
 import com.lordzintick.game.skill.SkillType;
 import com.lordzintick.util.Direction;
 
@@ -262,7 +263,7 @@ public class Player extends Entity {
             skillCooldownMultipliers.put(type, 1f);
             return 1f;
         } else {
-            return Math.max(0.1f, skillCooldownMultipliers.get(type) * globalCooldownMultiplier);
+            return Math.max(0.01f, skillCooldownMultipliers.get(type) * globalCooldownMultiplier);
         }
     }
 
@@ -271,8 +272,12 @@ public class Player extends Entity {
             skillDamageMultipliers.put(type, 1f);
             return 1f;
         } else {
-            return Math.min(10f, skillDamageMultipliers.get(type) * globalDamageMultiplier);
+            return Math.min(100f, skillDamageMultipliers.get(type) * globalDamageMultiplier);
         }
+    }
+
+    public SkillMultiplierSet getSkillMultiplierSet(SkillType type) {
+        return new SkillMultiplierSet(getSkillDamageMultiplier(type), getSkillCooldownMultiplier(type));
     }
 
     public void levelUp() {

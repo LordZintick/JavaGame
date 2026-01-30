@@ -100,39 +100,39 @@ public final class Achievements {
             }
             return false;
         }));
-        register("scholar_2", new Achievement("Scholar II", "Reach level 35", icons[5][2], game -> {
+        register("scholar_2", new Achievement("Scholar II", "Reach level 25", icons[5][2], game -> {
             if (game.screen instanceof MainGameScreen) {
-                return ((MainGameScreen) game.screen).getPlayer().level >= 35;
+                return ((MainGameScreen) game.screen).getPlayer().level >= 25;
             }
             return false;
         }));
-        register("scholar_3", new Achievement("Scholar III", "Reach level 75", icons[5][3], game -> {
+        register("scholar_3", new Achievement("Scholar III", "Reach level 50", icons[5][3], game -> {
+            if (game.screen instanceof MainGameScreen) {
+                return ((MainGameScreen) game.screen).getPlayer().level >= 50;
+            }
+            return false;
+        }));
+        register("scholar_4", new Achievement("Scholar IV", "Reach level 75", icons[5][4], game -> {
             if (game.screen instanceof MainGameScreen) {
                 return ((MainGameScreen) game.screen).getPlayer().level >= 75;
             }
             return false;
         }));
-        register("scholar_4", new Achievement("Scholar IV", "Reach level 150", icons[5][4], game -> {
+        register("scholar_5", new Achievement("Scholar V", "Reach level 100", icons[5][5], game -> {
+            if (game.screen instanceof MainGameScreen) {
+                return ((MainGameScreen) game.screen).getPlayer().level >= 100;
+            }
+            return false;
+        }));
+        register("scholar_6", new Achievement("Scholar VI", "Reach level 125", icons[5][6], game -> {
+            if (game.screen instanceof MainGameScreen) {
+                return ((MainGameScreen) game.screen).getPlayer().level >= 125;
+            }
+            return false;
+        }));
+        register("scholar_7", new Achievement("Scholar VII", "Reach level 150", icons[5][7], game -> {
             if (game.screen instanceof MainGameScreen) {
                 return ((MainGameScreen) game.screen).getPlayer().level >= 150;
-            }
-            return false;
-        }));
-        register("scholar_5", new Achievement("Scholar V", "Reach level 250", icons[5][5], game -> {
-            if (game.screen instanceof MainGameScreen) {
-                return ((MainGameScreen) game.screen).getPlayer().level >= 250;
-            }
-            return false;
-        }));
-        register("scholar_6", new Achievement("Scholar VI", "Reach level 450", icons[5][6], game -> {
-            if (game.screen instanceof MainGameScreen) {
-                return ((MainGameScreen) game.screen).getPlayer().level >= 450;
-            }
-            return false;
-        }));
-        register("scholar_7", new Achievement("Scholar VII", "Reach level 750", icons[5][7], game -> {
-            if (game.screen instanceof MainGameScreen) {
-                return ((MainGameScreen) game.screen).getPlayer().level >= 750;
             }
             return false;
         }));

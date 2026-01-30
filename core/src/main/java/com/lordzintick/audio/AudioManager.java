@@ -45,6 +45,7 @@ public final class AudioManager {
         register("confirm", new Sound(game, "audio/sfx/confirm.ogg", false, 0.5f, false));
         register("back", new Sound(game, "audio/sfx/back.ogg", false, 0.5f, false));
         register("achievement", new Sound(game, "audio/sfx/achievement.ogg", false, 1, false));
+        register("strike", new Sound(game, "audio/sfx/strike.ogg", false, 0.5f, false));
     }
 
     /**

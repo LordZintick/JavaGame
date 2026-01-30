@@ -1,11 +1,9 @@
 package com.lordzintick.game.entity;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.lordzintick.audio.AudioManager;
 import com.lordzintick.audio.Sound;
 import com.lordzintick.game.entity.player.Player;
 import com.lordzintick.game.proj.Projectile;
-import com.lordzintick.game.skill.SkillConfig;
+import com.lordzintick.game.skill.Behaviour;
 import com.lordzintick.game.skill.SkillHelper;
 import com.lordzintick.game.screen.AbstractGameScreen;
 
@@ -15,7 +13,7 @@ import java.util.Optional;
 public class EvilWizard extends HostileEntity {
     private float cooldown = 3f;
     private final String projTexture;
-    private SkillConfig projConfig;
+    private Behaviour projConfig;
     private final ArrayList<Projectile> ownedProjectiles = new ArrayList<>();
     /**
      * Constructs a new {@link Entity} with the provided spritesheet, which will be split into regions of the provided size
@@ -31,36 +29,36 @@ public class EvilWizard extends HostileEntity {
         switch (val) {
             case 0: {
                 textureName = "fireball";
-                projConfig = SkillConfig.FIREBALL;
+                projConfig = Behaviour.FIREBALL;
                 break;
             }
             case 1: {
                 textureName = "iceball";
-                projConfig = SkillConfig.ICEBALL;
+                projConfig = Behaviour.ICEBALL;
                 break;
             }
             case 2: {
                 textureName = "acidball";
-                projConfig = SkillConfig.ACIDBALL;
+                projConfig = Behaviour.ACIDBALL;
                 break;
             }
             case 3: {
                 textureName = "waterball";
-                projConfig = SkillConfig.WATERBALL;
+                projConfig = Behaviour.WATERBALL;
                 break;
             }
             case 4: {
                 textureName = "lightningball";
-                projConfig = SkillConfig.LIGHTNINGBALL;
+                projConfig = Behaviour.LIGHTNINGBALL;
                 break;
             }
             case 5: {
                 textureName = "flowerball";
-                projConfig = SkillConfig.FLOWERBALL;
+                projConfig = Behaviour.FLOWERBALL;
                 break;
             }
             case 6: {
-                projConfig = SkillConfig.PLASMA_BOLT;
+                projConfig = Behaviour.PLASMA_BOLT;
                 break;
             }
         }

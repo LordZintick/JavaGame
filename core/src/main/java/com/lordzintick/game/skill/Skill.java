@@ -9,11 +9,11 @@ import com.lordzintick.util.UIUtil;
 
 import java.util.ArrayList;
 
-public class Skill {
-    public final SkillType type;
+public class Skill<T extends SkillType> {
+    public final T type;
     private float remainingCooldown;
 
-    Skill(SkillType type) {
+    Skill(T type) {
         this.type = type;
     }
 
@@ -49,7 +49,7 @@ public class Skill {
             if (!type.castSound.stream) {
                 type.castSound.play();
             }
-            type.action.accept(player, player.getSkillDamageMultiplier(type));
+            type.action.accept(player, player.getSkillMultiplierSet(type));
         }
     }
 

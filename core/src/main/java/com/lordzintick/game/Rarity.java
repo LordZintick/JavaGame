@@ -24,14 +24,14 @@ public enum Rarity {
         int totalWeight = 0;
 
         for (Rarity rarity : values()) {
-            totalWeight += MathUtil.calculateWeight(rarity);
+            totalWeight += calculateWeight(rarity);
         }
 
         int value = random.nextInt(totalWeight);
         Rarity selectedRarity = null;
 
         for (Rarity rarity : values()) {
-            value -= MathUtil.calculateWeight(rarity);
+            value -= calculateWeight(rarity);
             if (value <= 0) {
                 selectedRarity = rarity;
                 break;
@@ -39,5 +39,9 @@ public enum Rarity {
         }
 
         return selectedRarity;
+    }
+
+    public static int calculateWeight(Rarity rarity) {
+        return (int) Math.pow(((Rarity.values().length - rarity.ordinal() + 1) + 1), 2);
     }
 }

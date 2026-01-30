@@ -12,7 +12,7 @@ public enum PlayerClass {
         ListUtil.listOf("fireball", // Commons
             "iceball", "acidball", "waterball", "lightningball", "flowerball", "petal",  // Uncommons
             "poison_nova", "lightning_bolt", "plasma_bolt", // Rares
-            "wave", "petalstorm", // Epics
+            "wave", "petalstorm", "lightning_strike", // Epics
             "laser_beam"), // Legendaries
         ListUtil.listOf(
             "The classic mage",

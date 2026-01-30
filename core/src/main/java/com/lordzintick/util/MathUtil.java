@@ -21,8 +21,4 @@ public final class MathUtil {
     public static boolean isPointInArea(int px, int py, float ax, float ay, int aw, int ah) {
         return (px >= ax && px <= ax + aw && py <= -ay + Gdx.graphics.getHeight() && py >= -ay - ah + Gdx.graphics.getHeight());
     }
-
-    public static int calculateWeight(Rarity rarity) {
-        return (int) Math.pow(((Rarity.values().length - rarity.ordinal() + 1) + 1), 2);
-    }
 }

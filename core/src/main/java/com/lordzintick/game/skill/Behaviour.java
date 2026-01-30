@@ -3,7 +3,6 @@ package com.lordzintick.game.skill;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector4;
-import com.lordzintick.audio.AudioManager;
 import com.lordzintick.game.entity.Entity;
 import com.lordzintick.game.entity.effect.BleedEffect;
 import com.lordzintick.game.entity.effect.BurnEffect;
@@ -15,14 +14,14 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
-public final class SkillConfig {
+public final class Behaviour {
     public final int projWidth, projHeight, defaultDamage, pierce;
     public final float speed, frameTime, lifeTime;
     public final boolean aimAtCursor;
     public final BiConsumer<Projectile, Float> tick;
     public final BiConsumer<Projectile, Entity> hit;
 
-    public SkillConfig(int projWidth, int projHeight, int defaultDamage, float speed, int pierce, float frameTime, float lifeTime, boolean aimAtCursor, BiConsumer<Projectile, Float> tick, BiConsumer<Projectile, Entity> hit) {
+    public Behaviour(int projWidth, int projHeight, int defaultDamage, float speed, int pierce, float frameTime, float lifeTime, boolean aimAtCursor, BiConsumer<Projectile, Float> tick, BiConsumer<Projectile, Entity> hit) {
         this.projWidth = projWidth;
         this.projHeight = projHeight;
         this.defaultDamage = defaultDamage;
@@ -35,7 +34,7 @@ public final class SkillConfig {
         this.hit = hit;
     }
 
-    public SkillConfig(int projWidth, int projHeight, int defaultDamage, float speed, int pierce, float lifeTime, boolean aimAtCursor, BiConsumer<Projectile, Float> tick, BiConsumer<Projectile, Entity> hit) {
+    public Behaviour(int projWidth, int projHeight, int defaultDamage, float speed, int pierce, float lifeTime, boolean aimAtCursor, BiConsumer<Projectile, Float> tick, BiConsumer<Projectile, Entity> hit) {
         this.projWidth = projWidth;
         this.projHeight = projHeight;
         this.defaultDamage = defaultDamage;
@@ -49,7 +48,7 @@ public final class SkillConfig {
     }
 
     // MAGE
-    public static final SkillConfig FIREBALL = new SkillConfig(
+    public static final Behaviour FIREBALL = new Behaviour(
         8, 8, 1, 800, 0, 0, false, (projectile, deltaTime) -> {
         Random random = projectile.screen.game.random;
         projectile.screen.addParticle(
@@ -66,7 +65,7 @@ public final class SkillConfig {
             enemy.applyEffect(new BurnEffect(projectile.screen.game, 5, 1));
         }
     });
-    public static final SkillConfig ICEBALL = new SkillConfig(
+    public static final Behaviour ICEBALL = new Behaviour(
         8, 8, 3, 400, 1, 0, false, (projectile, deltaTime) -> {
         Random random = projectile.screen.game.random;
         projectile.screen.addParticle(
@@ -81,7 +80,7 @@ public final class SkillConfig {
     }, (projectile, enemy) -> {
         enemy.applyEffect(new SlowEffect(projectile.screen.game, 5, 2));
     });
-    public static final SkillConfig ACIDBALL = new SkillConfig(
+    public static final Behaviour ACIDBALL = new Behaviour(
         8, 8, 2, 600, 0, 0, false, (projectile, deltaTime) -> {
         Random random = projectile.screen.game.random;
         projectile.screen.addParticle(
@@ -96,7 +95,7 @@ public final class SkillConfig {
     }, (projectile, enemy) -> {
         enemy.applyEffect(new PoisonEffect(projectile.screen.game, 10, 1));
     });
-    public static final SkillConfig WATERBALL = new SkillConfig(
+    public static final Behaviour WATERBALL = new Behaviour(
         8, 8, 1, 700, 4, 0, false, (projectile, deltaTime) -> {
         Random random = projectile.screen.game.random;
         projectile.screen.addParticle(
@@ -113,7 +112,7 @@ public final class SkillConfig {
             enemy.x += normal.x * 64;
             enemy.y += normal.y * 64;
     });
-    public static final SkillConfig LIGHTNINGBALL = new SkillConfig(
+    public static final Behaviour LIGHTNINGBALL = new Behaviour(
         8, 8, 5, 1400, 0, 0, false, (projectile, deltaTime) -> {
         Random random = projectile.screen.game.random;
         projectile.screen.addParticle(
@@ -127,7 +126,7 @@ public final class SkillConfig {
         );
     }, (projectile, enemy) -> {
     });
-    public static final SkillConfig FLOWERBALL = new SkillConfig(
+    public static final Behaviour FLOWERBALL = new Behaviour(
         8, 8, 2, 500, 0, 0, false, (projectile, deltaTime) -> {
         Random random = projectile.screen.game.random;
         projectile.screen.addParticle(
@@ -143,12 +142,12 @@ public final class SkillConfig {
             if (projectile.screen.game.random.nextInt(4) == 0)
                 projectile.owner.heal(1);
     });
-    public static final SkillConfig POISON_NOVA = new SkillConfig(
+    public static final Behaviour POISON_NOVA = new Behaviour(
         32, 32, 8, 0.25f, 999, 0.25f, 2, false, (projectile, deltaTime) -> {
     }, (projectile, enemy) -> {
         enemy.applyEffect(new PoisonEffect(projectile.screen.game, 10, 1));
     });
-    public static final SkillConfig LIGHTNING_BOLT = new SkillConfig(
+    public static final Behaviour LIGHTNING_BOLT = new Behaviour(
         8, 8, 2, 1400, 3, 0, false, (projectile, deltaTime) -> {
         Random random = projectile.screen.game.random;
         projectile.screen.addParticle(
@@ -162,7 +161,7 @@ public final class SkillConfig {
         );
     }, (projectile, enemy) -> {
     });
-    public static final SkillConfig PLASMA_BOLT = new SkillConfig(
+    public static final Behaviour PLASMA_BOLT = new Behaviour(
         8, 8, 2, 600, 999, 0, false,
         (proj, delta) -> {
             Random random = proj.screen.game.random;
@@ -182,34 +181,34 @@ public final class SkillConfig {
         }
     }
     );
-    public static final SkillConfig LASER_BEAM = new SkillConfig(
+    public static final Behaviour LASER_BEAM = new Behaviour(
         64, 16, 8, 0, 999, 0.1f, 8, true, (proj, delta) -> {
             proj.screen.game.audio.get("laser_ambient").play();
     }, (proj, ent) -> {
             ent.applyEffect(new BurnEffect(proj.screen.game, 15, 2));
     }
     );
-    public static final SkillConfig WAVE = new SkillConfig(
+    public static final Behaviour WAVE = new Behaviour(
         16, 48, 5, 800, 999, 0, true, (proj, delta) -> {}, (proj, ent) -> {
         Vector2 normal = proj.movementVector.cpy().nor();
             ent.x += normal.x * 128;
             ent.y += normal.y * 128;
     }
     );
-    public static final SkillConfig PETAL = new SkillConfig(
+    public static final Behaviour PETAL = new Behaviour(
         6, 4, 1, 650, 0, 0, true, (proj, delta) -> {}, (proj, ent) -> {
         if (proj.screen.game.random.nextInt(10) == 0)
             proj.owner.heal(1);
     }
     );
-    public static final SkillConfig PETALSTORM_BALL = new SkillConfig(
+    public static final Behaviour PETALSTORM_BALL = new Behaviour(
         8, 8, 3, 300, 8, 0.25f, 0, false, (proj, delta) -> {
             proj.angle += 1;
             if (proj.generalTicks >= 0.75f) {
                 proj.resetGeneralTicks();
                 for (int i = 0; i < 4; i++) {
                     float angle = 45 + proj.angle + i * 90;
-                    SkillHelper.shootProjectile("textures/game/skills/petal.png", proj.owner, proj.x + proj.width * 4, proj.y + proj.height * 4, angle, Optional.of("petalstorm"), SkillConfig.PETAL);
+                    SkillHelper.shootProjectile("textures/game/skills/petal.png", proj.owner, proj.x + proj.width * 4, proj.y + proj.height * 4, angle, Optional.of("petalstorm"), Behaviour.PETAL);
                 }
             }
     }, (proj, ent) -> {
@@ -217,11 +216,14 @@ public final class SkillConfig {
             proj.owner.heal(1);
     }
     );
+    public static final Behaviour LIGHTNING_STRIKE = new Behaviour(
+        32, 32, 15, 0, 999, 0.5f, 1f, false, (proj, delta) -> {}, (proj, ent) -> {}
+    );
 
 
 
     // WARRIOR
-    public static final SkillConfig SLASH = new SkillConfig(
+    public static final Behaviour SLASH = new Behaviour(
         16, 16, 2, 0, 999, 0.05f, 0.15f,
         true, (proj, delta) -> {}, (proj, ent) -> {
             if (proj.screen.game.random.nextInt(3) == 0) {
@@ -230,7 +232,7 @@ public final class SkillConfig {
         }
     );
 
-    public static final SkillConfig AXE = new SkillConfig(
+    public static final Behaviour AXE = new Behaviour(
         8, 8, 2, 700, 2, 0.25f, 1f, false, (proj, delta) -> {}, (proj, ent) -> {
         if (proj.screen.game.random.nextInt(2) == 0) {
             ent.applyEffect(new BleedEffect(proj.screen.game, 8, proj.screen.game.random.nextInt(2) + 1));
@@ -238,7 +240,7 @@ public final class SkillConfig {
     }
     );
 
-    public static final SkillConfig WHIRLWIND = new SkillConfig(
+    public static final Behaviour WHIRLWIND = new Behaviour(
         8, 8, 1, 1200, 4, 0.1f, 3f, false, (proj, delta) -> {}, (proj, ent) -> {
         if (proj.screen.game.random.nextInt(5) == 0) {
             ent.applyEffect(new BleedEffect(proj.screen.game, 5, 1));
@@ -246,7 +248,7 @@ public final class SkillConfig {
     }
     );
 
-    public static final SkillConfig MEGA_SLASH = new SkillConfig(
+    public static final Behaviour MEGA_SLASH = new Behaviour(
         48, 48, 10, 0, 999, 0.25f, 0.75f,
         true, (proj, delta) -> {}, (proj, ent) -> {
         ent.applyEffect(new BleedEffect(proj.screen.game, 15, 3));

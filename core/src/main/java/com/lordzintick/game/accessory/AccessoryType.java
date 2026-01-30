@@ -25,5 +25,5 @@ public class AccessoryType {
         this.description = description;
     }
 
-    public Accessory getInstance(Rarity rarity, List<String> targets) {return new Accessory(this, rarity, targets);}
+    public Accessory<AccessoryType> getInstance(Rarity rarity, List<String> targets) {return new Accessory<>(this, rarity, targets);}
 }

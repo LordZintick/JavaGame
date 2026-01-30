@@ -17,9 +17,9 @@ public class SkillType {
     public final int manaCost;
     public final float cooldown;
     public final Sound castSound;
-    public final BiConsumer<Player, Float> action;
+    public final BiConsumer<Player, SkillMultiplierSet> action;
 
-    public SkillType(String displayName, Rarity rarity, List<Text> description, TextureRegion icon, int manaCost, float cooldown, Sound castSound, BiConsumer<Player, Float> action) {
+    public SkillType(String displayName, Rarity rarity, List<Text> description, TextureRegion icon, int manaCost, float cooldown, Sound castSound, BiConsumer<Player, SkillMultiplierSet> action) {
         this.displayName = displayName;
         this.rarity = rarity;
         this.description = description;
@@ -30,7 +30,7 @@ public class SkillType {
         this.action = action;
     }
 
-    public Skill getInstance() {
-        return new Skill(this);
+    public Skill<SkillType> getInstance() {
+        return new Skill<>(this);
     }
 }

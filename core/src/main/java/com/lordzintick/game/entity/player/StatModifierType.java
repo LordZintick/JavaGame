@@ -17,7 +17,7 @@ public class StatModifierType {
         this.description = description;
     }
 
-    public StatModifier getInstance(float amount) {
-        return new StatModifier(this, amount);
+    public StatModifier<StatModifierType> getInstance(float amount) {
+        return new StatModifier<>(this, amount);
     }
 }
