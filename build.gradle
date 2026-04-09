@@ -74,11 +74,16 @@ subprojects {
     maven {
       name = "GitHubPackages"
       url = uri("https://maven.pkg.github.com/LordZintick/PixelKrushEngine")
+      credentials {
+        username = localProperties.getProperty('gpr.user')
+        password = localProperties.getProperty('gpr.key')
+      }
     }
     maven { url = 'https://jitpack.io' }
   }
+
   dependencies {
-    implementation "com.github.lordzintick:pixel-krush-engine:0.1"
+    implementation "com.github.lordzintick:pixel-krush-engine:0.1.1"
   }
 }
 

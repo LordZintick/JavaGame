@@ -3,6 +3,7 @@ package com.github.lordzintick.java_game.ui.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Align;
 import com.github.lordzintick.java_game.MainGame;
+import com.github.lordzintick.pixel_krush.core.util.Logger;
 import com.github.lordzintick.pixel_krush.core.util.audio.Sound;
 import com.github.lordzintick.pixel_krush.core.api.AbstractUIScreen;
 import com.github.lordzintick.pixel_krush.core.util.Direction;
@@ -18,6 +19,8 @@ import java.util.List;
  * An implementation of {@link AbstractUIScreen} for the Title screen
  */
 public class TitleScreen extends AbstractUIScreen {
+    private static final Logger LOGGER = new Logger(TitleScreen.class);
+
     public TitleScreen(MainGame game) {
         super(game);
     }
